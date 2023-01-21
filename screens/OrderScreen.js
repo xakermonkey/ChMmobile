@@ -4,6 +4,8 @@ import { TouchableOpacity, SafeAreaView, StyleSheet, Text, TextInput, Image, Vie
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import MaskInput, { formatWithMask } from 'react-native-mask-input';
 import styleScheme from '../style/colorSchemes'
+// import SkeletonContent from 'react-native-skeleton-content';
+
 // import axios from 'axios';
 // import { domain } from '../domain';
 // import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +13,20 @@ import styleScheme from '../style/colorSchemes'
 const OrderScreen = ({ navigation }) => {
 
     const colorScheme = styleScheme()
+
+    // return (
+    //     <SkeletonContent
+    //         containerStyle={{ flex: 1, width: 300 }}
+    //         isLoading={true}
+    //         layout={[
+    //             { key: 'someId', width: 220, height: 20, marginBottom: 6 },
+    //             { key: 'someOtherId', width: 180, height: 20, marginBottom: 6 }
+    //         ]}
+    //     >
+    //         <Text style={styles.normalText}>Your content</Text>
+    //         <Text style={styles.bigText}>Other content</Text>
+    //     </SkeletonContent>
+    // )
 
     return (
         <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -84,6 +100,8 @@ const OrderScreen = ({ navigation }) => {
                     </View>
                 </View>
             </View>
+
+
         </View>
     )
 }

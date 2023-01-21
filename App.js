@@ -7,6 +7,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold, useFonts } from '@expo-google-fonts/inter';
 
+
+import SplashScreen from './screens/SplashScreen';
+
 import LoginScreen from './screens/LoginScreen';
 import CodeScreen from './screens/CodeScreen';
 import MainNavigator from './screens/MainNavigator';
@@ -36,7 +39,9 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='courier_driver_navigator' >
+      <Stack.Navigator initialRouteName='main_navigator' >
+
+      <Stack.Screen options={{ headerShown: false }} name='preview' component={SplashScreen} />
 
         <Stack.Screen options={{ headerShown: false }} name='login_screen' component={LoginScreen} />
         <Stack.Screen options={{ headerShown: false }} name='code_screen' component={CodeScreen} />

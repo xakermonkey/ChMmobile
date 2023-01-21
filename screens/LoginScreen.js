@@ -4,19 +4,21 @@ import { Appearance, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity
 import { Ionicons } from '@expo/vector-icons';
 import MaskInput, { formatWithMask } from 'react-native-mask-input';
 import styleScheme from '../style/colorSchemes'
-// import axios from 'axios';
-// import { domain } from '../domain';
+import axios from 'axios';
+import { domain } from '../domain';
+import * as Haptics from 'expo-haptics';
 // import { Ionicons } from '@expo/vector-icons';
 
 const LoginScreen = ({ navigation }) => {
 
     const [number, setNumber] = useState('+7');
-    const [mask, setMask] = useState([...'+7'.split(""), " ", '(', /\d/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, '-', /\d/, /\d/]);
+    const [mask, setMask] = useState(["+", "7", " ", '(', /\d/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, '-', /\d/, /\d/]);
     const [maskNumber, setMaskNumber] = useState('+7');
 
     const colorScheme = styleScheme()
 
     const Click = (num) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
         if (num === 'del') {
             if (number.length > 2) {
                 setNumber(number.slice(0, -1));
@@ -32,13 +34,17 @@ const LoginScreen = ({ navigation }) => {
                 text: number,
                 mask: mask,
             });
-            // axios.post(domain + "/login", { "number": number })
-            //     .then((res) => {
-                    navigation.navigate('code_screen', { 'login': masked, 'number': number })
-                // })
+            axios.post(domain + "/login", { "number": number })
+                .then((res) => {
+                    if (res.data.status){
+                        navigation.navigate('code_screen', { 'login': masked, 'number': number })
+                    }
+                })
 
         }
     }, [number, mask])
+
+
     return (
         <SafeAreaView style={[styles.container, colorScheme.themeContainerStyle]} >
             <StatusBar style={colorScheme.colorScheme === 'dark' ? 'light' : 'dark'} />
