@@ -5,18 +5,37 @@ import { Entypo, Ionicons, AntDesign } from '@expo/vector-icons';
 import styleScheme from '../style/colorSchemes'
 import Carousel from 'react-native-snap-carousel';
 import { Video, AVPlaybackStatus } from 'expo-av';
+import * as WebBrowser from 'expo-web-browser';
+import { useFocusEffect } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 
-// import axios from 'axios';
-// import { domain } from '../domain';
+import axios from 'axios';
+import { domain } from '../domain';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { Ionicons } from '@expo/vector-icons';
 
 const MainScreen = ({ navigation }) => {
 
+
+    useFocusEffect(() => {
+        (async () => {
+        
+        })();
+    })
+
     const colorScheme = styleScheme();
 
 
-  const video = useRef(null);
-  const [status, setStatus] = useState({});
+    const video = useRef(null);
+    const [status, setStatus] = useState({});
+
+
+    const [resultWeb, setResultWeb] = useState(null);
+    const [viewOpacity, setViewOpacity] = useState(1);
+    const [viewHeight, setViewHeight] = useState(90);
+    const [visabilityView, setVisabilityView] = useState(true);
+    const [imgSize, setImgSize] = useState(72);
+
 
     const carouselRef = useRef();
     const [selectIndex, setSelectIndex] = useState(0);
@@ -41,19 +60,49 @@ const MainScreen = ({ navigation }) => {
                     elevation: 6,
                 }} >
                     <Video
-        ref={video}
-        style={{height:150, borderRadius: 20 }}
-        source={{
-          uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-        }}
-        useNativeControls
-        resizeMode="contain"
-        isLooping
-        onPlaybackStatusUpdate={status => setStatus(() => status)}
-      />
+                        ref={video}
+                        style={{ height: 150, borderRadius: 20 }}
+                        source={{
+                            uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+                        }}
+                        useNativeControls
+                        resizeMode="contain"
+                        isLooping
+                        onPlaybackStatusUpdate={status => setStatus(() => status)}
+                    />
                 </View>
             )
         }
+    }
+
+    const openWeb = async (url) => {
+        let result = await WebBrowser.openBrowserAsync(url);
+        setResultWeb(result);
+    }
+
+    const onScroll = (event) => {
+        if (event.nativeEvent.contentOffset.y <= 90){
+            setVisabilityView(true);
+        }else{
+            setVisabilityView(false)
+        }
+        if (0 < event.nativeEvent.contentOffset.y && event.nativeEvent.contentOffset.y <= 90){
+            setViewHeight(90 - event.nativeEvent.contentOffset.y);
+            setViewOpacity((90 - event.nativeEvent.contentOffset.y) / 90.0);
+        }
+        if (0 < event.nativeEvent.contentOffset.y && event.nativeEvent.contentOffset.y <= 72){
+            setImgSize(72 - event.nativeEvent.contentOffset.y);
+        }
+    }
+
+
+    const Exit = async () => {
+        await AsyncStorage.multiRemove(await AsyncStorage.getAllKeys());
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: "login_screen" }]
+            }));
     }
 
     return (
@@ -82,22 +131,22 @@ const MainScreen = ({ navigation }) => {
                     </View>
                 </SafeAreaView>
             </View>
-
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', marginTop: '6%' }}>
+            {visabilityView &&
+            <View style={[{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', marginTop: '6%' }, {height: viewHeight, opacity: viewOpacity}]}>
                 <View style={{ padding: '2%', backgroundColor: '#f2f2f3', borderRadius: '20' }}>
-                    <Image source={require('../assets/test_logo.png')} style={{ width: 72, height: 72 }}></Image>
+                    <Image source={require('../assets/test_logo.png')} style={{ width: imgSize, height: imgSize }}></Image>
                 </View>
 
                 <View style={{ padding: '2%', backgroundColor: '#f2f2f3', borderRadius: '20', width: '65%' }}>
                     <Text style={{ fontFamily: 'Inter_600SemiBold', textAlign: 'center' }}>Чистый мир - это компания, которая заботится об экологии и безвозмездно поможет Вам с вывозом мусора</Text>
                 </View>
-            </View>
+            </View>}
 
 
 
 
 
-            <ScrollView>
+            <ScrollView onScroll={onScroll} scrollEventThrottle={1}>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '4%' }}>
                     <View>
@@ -174,7 +223,7 @@ const MainScreen = ({ navigation }) => {
                         elevation: 6,
                     }}>
                         <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 15, color: '#fff' }}>Картон</Text>
-                        <Image source={{uri: 'https://catherineasquithgallery.com/uploads/posts/2021-03/1614576345_19-p-korobka-na-belom-fone-19.png'}} style={{ height: 100, width: 100, left: 5 }} resizeMode='contain' />
+                        <Image source={{ uri: 'https://catherineasquithgallery.com/uploads/posts/2021-03/1614576345_19-p-korobka-na-belom-fone-19.png' }} style={{ height: 100, width: 100, left: 5 }} resizeMode='contain' />
                     </TouchableOpacity>
                 </ScrollView>
 
@@ -191,24 +240,24 @@ const MainScreen = ({ navigation }) => {
                 </View>
                 <View style={{ paddingHorizontal: '4%' }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', backgroundColor: '#f2f2f3', padding: '2%', borderRadius: 20 }}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => {openWeb("https://telegram.org/")}} activeOpacity={0.8}>
                             <Image source={require('../assets/icons/tg.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => {openWeb("https://www.whatsapp.com/?lang=ru")}} activeOpacity={0.8}>
                             <Image source={require('../assets/icons/wa.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => {openWeb("https://www.viber.com/ru/")}} activeOpacity={0.8}>
                             <Image source={require('../assets/icons/vib.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => {openWeb("https://vk.com/feed")}} activeOpacity={0.8}>
                             <Image source={require('../assets/icons/vk.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => {openWeb("https://ok.ru/")}} activeOpacity={0.8}>
                             <Image source={require('../assets/icons/ok.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
                     </View>
                 </View>
-                <TouchableOpacity activeOpacity={0.9} style={{ padding: '4%' }}>
+                <TouchableOpacity activeOpacity={0.9} style={{ padding: '4%' }} onPress={Exit}>
                     <Text style={{ fontFamily: 'Inter_400Regular', color: '#0000004F', fontSize: 12 }}>Выход</Text>
                 </TouchableOpacity>
                 <View style={{ height: 100 }}></View>
