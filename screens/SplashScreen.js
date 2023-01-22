@@ -6,7 +6,7 @@ import { CommonActions } from '@react-navigation/native';
 const SplashScreen = ({navigation}) => {
 
     useLayoutEffect(() => {
-        AsyncStorage.removeItem("token");
+        // AsyncStorage.removeItem("token");
         (async () => {
             const token = await AsyncStorage.getItem("token");
             if (token != null){

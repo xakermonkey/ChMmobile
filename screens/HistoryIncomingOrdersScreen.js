@@ -1,18 +1,37 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Appearance, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions } from 'react-native'
 import { Entypo, EvilIcons, AntDesign, FontAwesome5 } from '@expo/vector-icons';
 import styleScheme from '../style/colorSchemes';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import axios from 'axios';
+import { domain } from '../domain';
 
-
-// import axios from 'axios';
-// import { domain } from '../domain';
-// import { Ionicons } from '@expo/vector-icons';
 
 const HistoryIncomingOrders = ({ navigation }) => {
 
     const colorScheme = styleScheme();
+
+    const [orders, setOrders] = useState([]);
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useFocusEffect(useCallback(() => {
+        (async () => {
+            try{
+                const token = await AsyncStorage.getItem("token");
+                const res = await axios.get(domain + "/history_list_order_driver", {headers: {"Authorization": "Token " + token}});
+                setOrders(res.data.orders);
+                setLoading(false);
+            }catch(err){
+                console.log(err);
+                setError(true);
+            }
+
+        })();
+    }, []))
 
     const [selectedLanguage, setSelectedLanguage] = useState();
 

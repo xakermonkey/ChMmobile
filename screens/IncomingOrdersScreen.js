@@ -1,16 +1,37 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { TouchableOpacity, SafeAreaView, StyleSheet, Text, ScrollView, Image, View } from 'react-native'
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import MaskInput, { formatWithMask } from 'react-native-mask-input';
 import styleScheme from '../style/colorSchemes'
-// import axios from 'axios';
-// import { domain } from '../domain';
-// import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { domain } from '../domain';
 
 const IncomingOrders = ({ navigation }) => {
 
     const colorScheme = styleScheme()
+
+
+    const [orders, setOrders] = useState([]);
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useFocusEffect(useCallback(() => {
+        (async () => {
+            try{
+                const token = await AsyncStorage.getItem("token");
+                const res = await axios.get(domain + "/list_order_driver", {headers: {"Authorization": "Token " + token}});
+                setOrders(res.data.orders);
+                setLoading(false);
+            }catch(err){
+                console.log(err);
+                setError(true);
+            }
+
+        })();
+    }, []))
 
     return (
         <View style={{ flex: 1, backgroundColor: '#fff' }}>

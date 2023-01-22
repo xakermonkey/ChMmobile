@@ -1,18 +1,42 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { TouchableOpacity, SafeAreaView, StyleSheet, Text, TextInput, Image, View } from 'react-native'
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import MaskInput, { formatWithMask } from 'react-native-mask-input';
-import styleScheme from '../style/colorSchemes'
-// import SkeletonContent from 'react-native-skeleton-content';
+import styleScheme from '../style/colorSchemes';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
-// import axios from 'axios';
-// import { domain } from '../domain';
-// import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import { domain } from '../domain';
 
 const OrderScreen = ({ navigation }) => {
 
     const colorScheme = styleScheme()
+
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [err, setError] = useState(false);
+
+    useFocusEffect(useCallback(() => {
+        (async () => {
+            try {
+                const token = await AsyncStorage.getItem("token");
+                const res = await axios.get(domain + "/list_order_user", {
+                    headers: {
+                        "Authorization": "Token " + token
+                    }
+                });
+                setOrders(res.data.orders)
+                setLoading(false);
+
+            }
+            catch (err) {
+                console.log(err);
+                setError(true);
+            }
+        })();
+    }, []));
 
     // return (
     //     <SkeletonContent
