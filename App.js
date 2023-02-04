@@ -5,32 +5,34 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold, useFonts } from '@expo-google-fonts/inter';
+import { useFonts, FiraSans_400Regular, FiraSans_500Medium, FiraSans_300Light } from '@expo-google-fonts/fira-sans';
 
 
-import SplashScreen from './screens/SplashScreen';
+// import SplashScreen from './screens/SplashScreen';
 
 import LoginScreen from './screens/LoginScreen';
 import CodeScreen from './screens/CodeScreen';
-import MainNavigator from './screens/MainNavigator';
+
+import MainNavigator from './navigators/MainNavigator';
+import AboutGridScreen from './screens/user/AboutGridScreen';
+import LocationScreen from './screens/user/LocationScreen';
+import NotificationsScreen from './screens/user/NotificationsScreen';
+import CreatePhotoScreen from './screens/user/CreatePhotoScreen';
+import OrderCompletionScreen from './screens/user/OrderCompletionScreen';
 
 
-import FactoryNavigator from './screens/FactoryNavigator';
-import AddMaterialScreen from './screens/AddMaterialScreen'
-import SellScreen from './screens/SellScreen'
+import FactoryNavigator from './navigators/FactoryNavigator';
+import AddMaterialScreen from './screens/factory/AddMaterialScreen'
+import SellScreen from './screens/factory/SellScreen'
 
-import CourierDriverNavigator from './screens/CourierDriverNavigator'
+import CourierDriverNavigator from './navigators/CourierDriverNavigator'
 
 export default function App() {
 
   const Stack = createNativeStackNavigator()
 
   let [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-    Inter_800ExtraBold
+    FiraSans_400Regular, FiraSans_500Medium, FiraSans_300Light
   });
 
   if (!fontsLoaded) {
@@ -41,12 +43,17 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName='main_navigator' >
 
-      <Stack.Screen options={{ headerShown: false }} name='preview' component={SplashScreen} />
+      {/* <Stack.Screen options={{ headerShown: false }} name='preview' component={SplashScreen} /> */}
 
         <Stack.Screen options={{ headerShown: false }} name='login_screen' component={LoginScreen} />
         <Stack.Screen options={{ headerShown: false }} name='code_screen' component={CodeScreen} />
 
         <Stack.Screen options={{ headerShown: false }} name='main_navigator' component={MainNavigator} />
+        <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name='about_grid_screen' component={AboutGridScreen} />
+        <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name='location_screen' component={LocationScreen} />
+        <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name='notifications_screen' component={NotificationsScreen} />
+        <Stack.Screen options={{ headerShown: false }} name='create_photo_screen' component={CreatePhotoScreen} />
+        <Stack.Screen options={{ headerShown: false }} name='order_completion_screen' component={OrderCompletionScreen} />
 
         <Stack.Screen options={{ headerShown: false }} name='factory_navigator' component={FactoryNavigator} />
         <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name="add_material_screen" component={AddMaterialScreen} />

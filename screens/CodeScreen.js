@@ -6,17 +6,20 @@ import { domain } from '../domain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { CommonActions } from '@react-navigation/native';
-import styleScheme from '../style/colorSchemes'
 
+import styleScheme from '../style/colorSchemes'
+import { colors } from '../style/colors';
+import GeometryBackground from '../components/GeometryBackground';
+import Line from '../components/Line';
 
 
 const CodeScreen = ({ navigation, route }) => {
-
     const [code, setCode] = useState('');
     const [verify, setVerify] = useState(true);
 
     const colorScheme = styleScheme()
-
+    const styles = colorScheme.styles;
+    
     // const Click = (num) => {
     //     if (num === 'del') {
     //         if (code.length > 0) {
@@ -75,16 +78,16 @@ const CodeScreen = ({ navigation, route }) => {
 
 
     return (
-        <SafeAreaView style={[styles.container, colorScheme.themeContainerStyle]} >
+        <SafeAreaView style={[colorScheme.themeContainerStyle, { flex: 1 }]} >
             <StatusBar style={colorScheme.colorScheme === 'dark' ? 'light' : 'dark'} />
             <View style={{ alignItems: 'center' }}>
-                <Text style={[styles.title, { color: '#0C0C0D' }]}>Код из СМС</Text>
-                <Text style={[styles.subtext, colorScheme.themeSubTextStyle]} >Введите код из сообщения,</Text>
-                <Text style={[styles.subsubtext, colorScheme.themeSubTextStyle]} >отправленного на номер</Text>
-                <Text style={[styles.subsubtext, colorScheme.themeSubTextStyle]} >{route.params.login}</Text>
+                <Text style={[styles.title, {marginTop:'10%'}]}>Код из СМС</Text>
+                <Text style={styles.subTitle} >Введите код из сообщения,</Text>
+                <Text style={styles.subTitle} >отправленного на номер</Text>
+                <Text style={styles.subTitle} >{route.params.login}</Text>
             </View>
             <View style={{ justifyContent: 'center', marginTop: '10%' }}>
-                <TextInput keyboardType='number-pad' maxLength={4} textContentType='oneTimeCode' autoFocus style={[styles.inputText, verify ? { color: '#0C0C0D' } : { color: "#9B0000" }]}
+                <TextInput keyboardType='number-pad' maxLength={4} textContentType='oneTimeCode' autoFocus style={[ verify ? styles.title : { color: "#9B0000" }, {fontSize:32, textAlign:'center'}]}
                     onChangeText={(code) => Click2(code)}
                 />
             </View>
@@ -93,49 +96,3 @@ const CodeScreen = ({ navigation, route }) => {
 }
 
 export default CodeScreen
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-    },
-    title: {
-        marginTop: 24,
-        fontSize: 24,
-        fontFamily: "Inter_800ExtraBold",
-    },
-    subtext: {
-        marginTop: 8,
-        fontSize: 16,
-        fontFamily: "Inter_500Medium",
-        lineHeight: 24,
-    },
-    subsubtext: {
-        fontSize: 16,
-        fontFamily: "Inter_500Medium",
-        lineHeight: 24,
-    },
-    inputText: {
-        fontSize: 32,
-        fontFamily: "Inter_800ExtraBold",
-        // marginTop: '25%'
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 24,
-        width: 300
-    },
-    btn: {
-        width: 72,
-        height: 72,
-        borderRadius: 72,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    num: {
-        fontSize: 20,
-        fontFamily: "Inter_800ExtraBold",
-    },
-})

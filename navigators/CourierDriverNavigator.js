@@ -1,31 +1,31 @@
 import React from 'react'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator, BottomTabBar } from '@react-navigation/bottom-tabs';
 import { TouchableOpacity } from 'react-native';
 import { FontAwesome5, MaterialIcons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import IncomingOrders from './IncomingOrdersScreen'
-import HistoryIncomingOrders from './HistoryIncomingOrdersScreen'
-import CourierDriver from './CourierDriverScreen'
+import IncomingOrders from '../screens/driver/IncomingOrdersScreen'
+import HistoryIncomingOrders from '../screens/driver/HistoryIncomingOrdersScreen'
+import CourierDriver from '../screens/driver/CourierDriverScreen'
 
 
 const Tab = createBottomTabNavigator();
 
 const IncomingOrdersButton = {
     headerShown: false,
-    tabBarIcon: () => <FontAwesome5 name="wine-bottle" size={24} color="white" />,
+    tabBarIcon: () => <FontAwesome5 name="wine-bottle" size={24} color="black" />,
     tabBarLabel: 'Заказы',
     tabBarActiveTintColor: 'white'
 }
 const HistoryIncomingOrdersButton = {
     headerShown: false,
-    tabBarIcon: () => <FontAwesome5 name="history" size={24} color="white" />,
+    tabBarIcon: () => <FontAwesome5 name="history" size={24} color="black" />,
     tabBarLabel: 'История',
     tabBarActiveTintColor: 'white'
 }
 const CourierDriverButton = {
     headerShown: false,
-    tabBarIcon: () => <Feather name="box" size={24} color="white" />,
+    tabBarIcon: () => <Feather name="box" size={24} color="black" />,
     tabBarLabel: 'Сетки',
     tabBarActiveTintColor: 'white'
 }
@@ -34,7 +34,16 @@ const CourierDriverButton = {
 const CourierDriverNavigator = ({ navigation }) => {
 
     return (
-        <Tab.Navigator screenOptions={screenOptions}>
+        <Tab.Navigator screenOptions={screenOptions} tabBar={(props) => {
+            return (
+                    <LinearGradient
+                        colors={['#75C860', '#C4FEB6']}>
+                        <BottomTabBar
+                            {...props}
+                        />
+                    </LinearGradient>
+            )
+        }}>
             <Tab.Screen options={IncomingOrdersButton} name="incoming_orders" component={IncomingOrders} />
             <Tab.Screen options={HistoryIncomingOrdersButton} name="history_incoming_orders" component={HistoryIncomingOrders} />
             <Tab.Screen options={CourierDriverButton} name="courier_driver" component={CourierDriver} />
@@ -44,7 +53,7 @@ const CourierDriverNavigator = ({ navigation }) => {
 
 const screenOptions = {
     tabBarStyle: {
-        backgroundColor: '#5e6f64',
+        backgroundColor: 'transparent',
         // width:'96%',
         // left:'2%',
         // borderRadius:20,
