@@ -3,10 +3,10 @@ import React, { useLayoutEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 
-const SplashScreen = ({navigation}) => {
+const LoadingRole = ({navigation}) => {
 
     useLayoutEffect(() => {
-        // AsyncStorage.removeItem("token");
+        AsyncStorage.removeItem("token");
         (async () => {
             const token = await AsyncStorage.getItem("token");
             if (token != null){
@@ -50,7 +50,7 @@ const SplashScreen = ({navigation}) => {
   )
 }
 
-export default SplashScreen
+export default LoadingRole
 
 const styles = StyleSheet.create({
     container: {

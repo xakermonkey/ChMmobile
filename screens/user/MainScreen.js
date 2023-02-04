@@ -1,10 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useCallback, useState, useRef } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { Linking, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions, Platform } from 'react-native'
 import { Entypo, Ionicons, AntDesign } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as WebBrowser from 'expo-web-browser';
 
 import QuestionButton from '../../components/QuestionButton';
 import CleanWorld from '../../components/CleanWorld';
@@ -12,11 +14,36 @@ import styleScheme from '../../style/colorSchemes'
 import { colors } from '../../style/colors';
 import GeometryBackground from '../../components/GeometryBackground';
 import Line from '../../components/Line';
-// import axios from 'axios';
-// import { domain } from '../domain';
-// import { Ionicons } from '@expo/vector-icons';
+
+import axios from 'axios';
+import { domain } from '../../domain';
 
 const MainScreen = ({ navigation }) => {
+
+    const [lastOrder, setLastOrder] = useState(null);
+    const [materials, setMaterials] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+
+    useFocusEffect(useCallback(() => {
+        (async () => {
+            try {
+                const token = await AsyncStorage.getItem("token");
+                const res = await axios.get(domain + "/main_user", {
+                    headers: {
+                        "Authorization": "Token " + token
+                    }
+                });
+                setLastOrder(res.data.order);
+                setMaterials(res.data.materials);
+                setLoading(false);
+            }
+            catch (err) {
+                console.log(err);
+                setError(true);
+            }
+        })();
+    }, []))
 
     const colorScheme = styleScheme();
     const styles = colorScheme.styles;
@@ -60,6 +87,21 @@ const MainScreen = ({ navigation }) => {
                 </View>
             )
         }
+    }
+
+    const openWeb = async (url) => {
+        let result = await WebBrowser.openBrowserAsync(url);
+        setResultWeb(result);
+    }
+
+
+    const Exit = async () => {
+        await AsyncStorage.multiRemove(await AsyncStorage.getAllKeys());
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: "login_screen" }]
+            }));
     }
 
     const makeCall = () => {
@@ -182,19 +224,19 @@ const MainScreen = ({ navigation }) => {
                     </TouchableOpacity>
                     <Text style={[styles.title, { textAlign: 'center' }]}>Мы в социальных сетях</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: '20%', marginTop: '5%' }}>
-                        <TouchableOpacity activeOpacity={0.9}>
+                        <TouchableOpacity onPress={() => { openWeb("https://telegram.org/") }} activeOpacity={0.9}>
                             <Image source={require('../../assets/icons/tg.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.9}>
+                        <TouchableOpacity onPress={() => { openWeb("https://www.whatsapp.com/?lang=ru") }} activeOpacity={0.9}>
                             <Image source={require('../../assets/icons/wa.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.9}>
+                        <TouchableOpacity onPress={() => { openWeb("https://www.viber.com/ru/") }} activeOpacity={0.9}>
                             <Image source={require('../../assets/icons/vib.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.9}>
+                        <TouchableOpacity onPress={() => { openWeb("https://vk.com/feed") }} activeOpacity={0.9}>
                             <Image source={require('../../assets/icons/vk.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.9}>
+                        <TouchableOpacity onPress={() => { openWeb("https://ok.ru/") }} activeOpacity={0.9}>
                             <Image source={require('../../assets/icons/ok.png')} style={{ width: 32, height: 32 }} />
                         </TouchableOpacity>
                     </View>

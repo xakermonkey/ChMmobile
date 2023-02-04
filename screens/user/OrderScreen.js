@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { TouchableOpacity, SafeAreaView, StyleSheet, Text, ScrollView, Image, View } from 'react-native'
 import { Ionicons, Entypo, EvilIcons } from '@expo/vector-icons';
@@ -10,28 +11,37 @@ import { colors } from '../../style/colors';
 import GeometryBackground from '../../components/GeometryBackground';
 import Line from '../../components/Line';
 
-// import axios from 'axios';
-// import { domain } from '../domain';
-// import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import { domain } from '../../domain';
 
 const OrderScreen = ({ navigation }) => {
 
     const colorScheme = styleScheme()
     const styles = colorScheme.styles;
 
-    // return (
-    //     <SkeletonContent
-    //         containerStyle={{ flex: 1, width: 300 }}
-    //         isLoading={true}
-    //         layout={[
-    //             { key: 'someId', width: 220, height: 20, marginBottom: 6 },
-    //             { key: 'someOtherId', width: 180, height: 20, marginBottom: 6 }
-    //         ]}
-    //     >
-    //         <Text style={styles.normalText}>Your content</Text>
-    //         <Text style={styles.bigText}>Other content</Text>
-    //     </SkeletonContent>
-    // )
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [err, setError] = useState(false);
+
+    useFocusEffect(useCallback(() => {
+        (async () => {
+            try {
+                const token = await AsyncStorage.getItem("token");
+                const res = await axios.get(domain + "/list_order_user", {
+                    headers: {
+                        "Authorization": "Token " + token
+                    }
+                });
+                setOrders(res.data.orders)
+                setLoading(false);
+
+            }
+            catch (err) {
+                console.log(err);
+                setError(true);
+            }
+        })();
+    }, []));
 
     return (
         <View style={[colorScheme.themeContainerStyle, { flex: 1 }]}>

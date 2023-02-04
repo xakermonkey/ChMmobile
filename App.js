@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
+// import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts, FiraSans_400Regular, FiraSans_500Medium, FiraSans_300Light } from '@expo-google-fonts/fira-sans';
 
 
-// import SplashScreen from './screens/SplashScreen';
+import LoadingRole from './screens/LoadingRole';
 
 import LoginScreen from './screens/LoginScreen';
 import CodeScreen from './screens/CodeScreen';
@@ -41,23 +41,23 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='main_navigator' >
+      <Stack.Navigator initialRouteName='loading_role' >
 
-      {/* <Stack.Screen options={{ headerShown: false }} name='preview' component={SplashScreen} /> */}
+        <Stack.Screen options={{ headerShown: false }} name='loading_role' component={LoadingRole} />
 
         <Stack.Screen options={{ headerShown: false }} name='login_screen' component={LoginScreen} />
         <Stack.Screen options={{ headerShown: false }} name='code_screen' component={CodeScreen} />
 
         <Stack.Screen options={{ headerShown: false }} name='main_navigator' component={MainNavigator} />
-        <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name='about_grid_screen' component={AboutGridScreen} />
-        <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name='location_screen' component={LocationScreen} />
-        <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name='notifications_screen' component={NotificationsScreen} />
+        <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} name='about_grid_screen' component={AboutGridScreen} />
+        <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} name='location_screen' component={LocationScreen} />
+        <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} name='notifications_screen' component={NotificationsScreen} />
         <Stack.Screen options={{ headerShown: false }} name='create_photo_screen' component={CreatePhotoScreen} />
         <Stack.Screen options={{ headerShown: false }} name='order_completion_screen' component={OrderCompletionScreen} />
 
         <Stack.Screen options={{ headerShown: false }} name='factory_navigator' component={FactoryNavigator} />
-        <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name="add_material_screen" component={AddMaterialScreen} />
-        <Stack.Screen options={{ headerShown: false, presentation:'modal' }} name="sell_screen" component={SellScreen} />
+        <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} name="add_material_screen" component={AddMaterialScreen} />
+        <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} name="sell_screen" component={SellScreen} />
 
         <Stack.Screen options={{ headerShown: false }} name='courier_driver_navigator' component={CourierDriverNavigator} />
 
