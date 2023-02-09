@@ -46,7 +46,7 @@ const GridItem = ({ item, colorScheme, openImg, delEntry, setAcceptEntry }) => {
         delEntry(item.id)
         return;
     } catch (err) {
-        
+
         Alert.alert("Ошибка", "Данные заказ уже в обработке")
     }
     }
@@ -61,8 +61,6 @@ const GridItem = ({ item, colorScheme, openImg, delEntry, setAcceptEntry }) => {
 
     return (
         <View style={{ padding: '4%' }}>
-            <Text style={styles.title}>Замечания клиентов</Text>
-            <Text style={styles.subTitle}>эти заказы от клиентов, которые считают, что сетка заполнена</Text>
 
             <View style={{ padding: '4%', backgroundColor: '#f2f2f3', borderRadius: '20', marginTop: '4%' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

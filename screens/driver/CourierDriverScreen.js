@@ -44,13 +44,13 @@ const CourierDriver = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
 
     const updateGrid = async () => {
-        try{
+        try {
             const token = await AsyncStorage.getItem("token");
-            const res = await axios.get(domain + "/change_grid", {headers: {"Authorization": "Token " + token}});
+            const res = await axios.get(domain + "/change_grid", { headers: { "Authorization": "Token " + token } });
             setEntry(res.data.entry);
             setAcceptEntry(res.data.accept_entry);
             setLoading(false);
-        }catch(err){
+        } catch (err) {
             console.log(err);
             setError(true);
         }
@@ -78,7 +78,7 @@ const CourierDriver = ({ navigation }) => {
         setEntry(entry.filter(item => item.id != id))
     }
 
-    
+
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -88,15 +88,20 @@ const CourierDriver = ({ navigation }) => {
 
     const renderList = () => {
         return (
-            <FlatList
-            data={entry}
-            keyExtractor={item => item.id}
-            renderItem={({ ind, item }) => <GridItem item={item} colorScheme={colorScheme} openImg={openImg} delEntry={delEntry} setAcceptEntry={setAcceptEntry} />}
-            ListEmptyComponent={<EmptyComponent />}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            ListFooterComponent={<View style={{ height: 100 }}></View>}
-            />
+            <View>
+                <View style={{ padding: '4%' }} ><Text style={styles.title}>Замечания клиентов</Text>
+                    <Text style={styles.subTitle}>эти заказы от клиентов, которые считают, что сетка заполнена</Text>
+                </View>
+                <FlatList
+                    data={entry}
+                    keyExtractor={item => item.id}
+                    renderItem={({ ind, item }) => <GridItem item={item} colorScheme={colorScheme} openImg={openImg} delEntry={delEntry} setAcceptEntry={setAcceptEntry} />}
+                    ListEmptyComponent={<EmptyComponent />}
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    ListFooterComponent={<View style={{ height: 100 }}></View>}
+                />
+            </View>
         )
     }
 
@@ -133,17 +138,17 @@ const CourierDriver = ({ navigation }) => {
                 </SafeAreaView>
 
             </Modal>
-            { acceptEntry == null ? renderList() : <CurrentGrid item={acceptEntry} colorScheme={colorScheme} setLoading={setLoading} setAcceptEntry={setAcceptEntry} />}
+            {acceptEntry == null ? renderList() : <CurrentGrid item={acceptEntry} colorScheme={colorScheme} setLoading={setLoading} setAcceptEntry={setAcceptEntry} />}
 
-                {/* <Line />  */}
+            {/* <Line />  */}
 
-                {/* <TouchableOpacity activeOpacity={0.9} style={{ padding: '4%' }}>
+            {/* <TouchableOpacity activeOpacity={0.9} style={{ padding: '4%' }}>
                     <Text style={styles.subTitle}>Выход</Text>
                 </TouchableOpacity> */}
 
-                
 
-                
+
+
 
             {/* </ScrollView> */}
         </View>
