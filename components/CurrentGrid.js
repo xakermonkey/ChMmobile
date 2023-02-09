@@ -65,6 +65,7 @@ const CurrentGrid = ({ item, colorScheme, setLoading, setAcceptEntry }) => {
             Alert.alert("Успех", "Событие успешно сохранено");
             setLoading(false)
             setAcceptEntry(null);
+            delEntry(item.id);
         }catch(err){
             console.log(err);
         }
