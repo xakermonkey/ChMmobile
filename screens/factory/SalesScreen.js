@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useLayoutEffect, useCallback } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions, FlatList } from 'react-native'
 import { Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,17 +9,71 @@ import styleScheme from '../../style/colorSchemes'
 import { colors } from '../../style/colors';
 import GeometryBackground from '../../components/GeometryBackground';
 import Line from '../../components/Line';
-
-// import axios from 'axios';
-// import { domain } from '../domain';
-// import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { domain } from '../../domain';
 
 const SalesScreen = ({ navigation }) => {
 
     const colorScheme = styleScheme();
     const styles = colorScheme.styles;
 
-    const [selectedLanguage, setSelectedLanguage] = useState();
+    const [selectedMaterial, setSelectedmaterial] = useState();
+    const [materials, setMaterials] = useState([]);
+    const [saleRecycling, setSaleRecycling] = useState([]);
+
+    useFocusEffect(useCallback(() => {
+        (async () => {
+            try {
+                const token = await AsyncStorage.getItem("token");
+                const res = await axios.get(domain + "/sale_recycling", { headers: { "Authorization": "Token " + token } });
+                setMaterials(res.data.materials);
+                setSaleRecycling(res.data.sale_recycling);
+                console.log(res.data);
+            }
+            catch (err) {
+                console.log(err);
+            }
+
+        })();
+    }, []))
+
+
+    const EmptyComponent = () => {
+        return (<View><Text style={{ color: "white" }}>ПУСТО</Text></View>)
+    }
+
+
+    const renderItem = ({item}) => {
+        return (<View style={{ width: '100%', padding: '4%' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View>
+                    <Text style={styles.subTitle}>дата</Text>
+                    <Text style={styles.text400_16}>{item.date.split(" ")[0]}</Text>
+                </View>
+                <View style={{ width: 100 }}>
+                    <Text style={styles.subTitle}>время</Text>
+                    <Text style={styles.text400_16}>{item.date.split(" ")[1]}</Text>
+                </View>
+            </View>
+            <Line />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View>
+                    <Text style={styles.subTitle}>масса, кг</Text>
+                    <Text style={styles.text400_16}>{item.mass}</Text>
+                </View>
+                <View style={{ width: 100 }}>
+                    <Text style={styles.subTitle}>цена за кг, руб</Text>
+                    <Text style={styles.text400_16}>{item.price_per_kg}</Text>
+                </View>
+            </View>
+            <Line />
+
+            <Text style={styles.subTitle}>стоимость, руб</Text>
+            <Text style={styles.text400_16}>{item.total_price}</Text>
+        </View>)
+    }
 
     return (
         <View style={[colorScheme.themeContainerStyle, { flex: 1 }]}>
@@ -47,49 +101,23 @@ const SalesScreen = ({ navigation }) => {
 
                 <Picker
                     itemStyle={styles.title}
-                    selectedValue={selectedLanguage}
+                    selectedValue={selectedMaterial}
                     onValueChange={(itemValue, itemIndex) =>
-                        setSelectedLanguage(itemValue)
+                        setSelectedmaterial(itemValue)
                     }>
-                    <Picker.Item label="Все" value="Все" />
-                    <Picker.Item label="Стекло" value="Стекло" />
-                    <Picker.Item label="Картон" value="Картон" />
+                    <Picker.Item label="Все" value={0} />
+                    {materials.map(obj => <Picker.Item label={obj.type} value={obj.id} key={obj.id} />)}
                 </Picker>
             </View>
 
             <Line />
 
-            <ScrollView>
-                    <View style={{width:'100%', padding:'4%'}}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View>
-                                <Text style={styles.subTitle}>дата</Text>
-                                <Text style={styles.text400_16}>16.01.23</Text>
-                            </View>
-                            <View style={{ width: 100 }}>
-                                <Text style={styles.subTitle}>время</Text>
-                                <Text style={styles.text400_16}>20:37</Text>
-                            </View>
-                        </View>
-                        <Line />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View>
-                                <Text style={styles.subTitle}>масса, кг</Text>
-                                <Text style={styles.text400_16}>80</Text>
-                            </View>
-                            <View style={{ width: 100 }}>
-                                <Text style={styles.subTitle}>цена за кг, руб</Text>
-                                <Text style={styles.text400_16}>20</Text>
-                            </View>
-                        </View>
-                        <Line />
-
-                        <Text style={styles.subTitle}>стоимость, руб</Text>
-                        <Text style={styles.text400_16}>1600</Text>
-                </View>
-
-                <View style={{ height: 100 }}></View>
-            </ScrollView>
+            <FlatList 
+                data={selectMaterial == 0 ? saleRecycling : saleRecycling.filter(item => item.type == selectedMaterial)}
+                keyExtractor={item => item.id}
+                renderItem={renderItem}
+                ListEmptyComponent={<EmptyComponent />}
+                />
         </View>
     )
 }

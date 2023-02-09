@@ -14,9 +14,10 @@ import styleScheme from '../../style/colorSchemes'
 import { colors } from '../../style/colors';
 import GeometryBackground from '../../components/GeometryBackground';
 import Line from '../../components/Line';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { domain } from '../../domain';
+import { domain, domain_domain } from '../../domain';
+import * as Location from "expo-location";
 
 const MainScreen = ({ navigation }) => {
 
@@ -24,6 +25,8 @@ const MainScreen = ({ navigation }) => {
     const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [nearestGrid, setNearesGrid] = useState([]);
+    const [address, setAddress] = useState("");
 
     useFocusEffect(useCallback(() => {
         (async () => {
@@ -36,6 +39,14 @@ const MainScreen = ({ navigation }) => {
                 });
                 setLastOrder(res.data.order);
                 setMaterials(res.data.materials);
+                let { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    Alert.alert("ALARM", 'Permission to access location was denied');
+                }else{
+                    let location = await Location.getCurrentPositionAsync({});
+                    const ad = await Location.reverseGeocodeAsync({latitude: location.coords.latitude, longitude: location.coords.longitude});
+                    setAddress(ad[0].name);
+                }
                 setLoading(false);
             }
             catch (err) {
@@ -117,6 +128,40 @@ const MainScreen = ({ navigation }) => {
         Linking.openURL(phoneNumber);
     };
 
+    const nearGrid = () => {
+        return (<ScrollView horizontal={true} style={{ height: 120, marginBottom: '4%' }}>
+            {nearestGrid.map(obj => {
+                return (
+                    <TouchableOpacity key={obj.id} onPress={() => { navigation.navigate('about_grid_screen') }} activeOpacity={0.9} style={{
+                        width: 120, height: 120, borderRadius: 20, marginLeft: 15, backgroundColor: '#C7F5FF'
+                    }}>
+                        <Text style={[styles.title, colorScheme.themeTextStyle2, { top: '10%', left: '10%' }]}>Металл</Text>
+                        <Image source={require('../../assets/items/metal.png')} style={{ height: 120, width: 120 }} resizeMode='contain' />
+                    </TouchableOpacity>)
+            })}
+
+        </ScrollView>)
+    }
+
+    const notFound = (text) => {
+        return (<View style={{ padding: '4%' }}>
+            <Text style={styles.title}>{text}</Text>
+        </View>)
+    }
+
+    const renderMaterial = () => {
+        return (<ScrollView horizontal={true} style={{ height: 120, marginBottom: '4%' }}>
+            {materials.map((obj) => {
+                return (<TouchableOpacity key={obj.id} activeOpacity={0.9} style={{
+                    width: 120, height: 120, borderRadius: 20, marginLeft: 15, backgroundColor: '#C7F5FF'
+                }}>
+                    <Text style={[styles.title, colorScheme.themeTextStyle2, { top: '10%', left: '10%' }]}>{obj.type}</Text>
+                    <Image source={{ uri: domain_domain + obj.icon }} style={{ height: 120, width: 120 }} resizeMode='contain' />
+                </TouchableOpacity>)
+            })}
+        </ScrollView>)
+    }
+
     return (
         <View style={[colorScheme.themeContainerStyle, { flex: 1 }]}>
             <StatusBar style={colorScheme.colorScheme === 'dark' ? 'light' : 'dark'} />
@@ -127,7 +172,7 @@ const MainScreen = ({ navigation }) => {
                     <View style={[styles.rowBetweenCenter, { padding: '3%' }]}>
                         <TouchableOpacity onPress={() => { navigation.navigate('location_screen') }} activeOpacity={0.9} style={[styles.btnHeader, styles.rowBetweenCenter]}>
                             <Entypo name="location-pin" size={24} color={colors.greenText.color} />
-                            <Text style={styles.btnText}>СНТ Солнечный Яр</Text>
+                            <Text style={styles.btnText}>{address}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => { navigation.navigate('notifications_screen') }} activeOpacity={0.9} style={[styles.roundBtn, styles.centerCenter]}>
                             <Ionicons name="notifications" size={24} color="black" />
@@ -147,14 +192,8 @@ const MainScreen = ({ navigation }) => {
                     </View>
                     <QuestionButton />
                 </View>
-                <ScrollView horizontal={true} style={{ height: 120, marginBottom: '4%' }}>
-                    <TouchableOpacity onPress={() => { navigation.navigate('about_grid_screen') }} activeOpacity={0.9} style={{
-                        width: 120, height: 120, borderRadius: 20, marginLeft: 15, backgroundColor: '#C7F5FF'
-                    }}>
-                        <Text style={[styles.title, colorScheme.themeTextStyle2, { top: '10%', left: '10%' }]}>Металл</Text>
-                        <Image source={require('../../assets/items/metal.png')} style={{ height: 120, width: 120 }} resizeMode='contain' />
-                    </TouchableOpacity>
-                </ScrollView>
+                {nearestGrid.length != 0 ? nearGrid() : notFound("Нет сеток поблизости")}
+
 
                 <View style={[styles.rowBetweenCenter, { padding: '4%' }]}>
                     <View>
@@ -163,9 +202,8 @@ const MainScreen = ({ navigation }) => {
                     </View>
                     <QuestionButton />
                 </View>
-                <View style={{ padding: '4%' }}>
-                    <Text style={styles.title}>У Вас еще не было заказов</Text>
-                </View>
+                {lastOrder == null ? notFound("У Вас еще не было заказов") : <View></View>}
+
 
                 <Line />
 
@@ -201,15 +239,7 @@ const MainScreen = ({ navigation }) => {
                     <QuestionButton />
 
                 </View>
-                <ScrollView horizontal={true} style={{ height: 120, marginBottom: '4%' }}>
-                    <TouchableOpacity activeOpacity={0.9} style={{
-                        width: 120, height: 120, borderRadius: 20, marginLeft: 15, backgroundColor: '#C7F5FF'
-                    }}>
-                        <Text style={[styles.title, colorScheme.themeTextStyle2, { top: '10%', left: '10%' }]}>Металл</Text>
-                        <Image source={require('../../assets/items/metal.png')} style={{ height: 120, width: 120 }} resizeMode='contain' />
-                    </TouchableOpacity>
-                </ScrollView>
-
+                {materials.length != 0 ? renderMaterial() : notFound("Приходите позже")}
                 <Line />
 
                 <View style={[styles.rowBetweenCenter, { padding: '4%' }]}>

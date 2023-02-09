@@ -63,6 +63,7 @@ const styleScheme = () => {
             color: colors.greenText.color,
             fontFamily: 'FiraSans_500Medium',
             fontSize: 18,
+            width: "80%"
         },
         btnHeader: { // сама кнопка в шапке
             backgroundColor: 'white',
