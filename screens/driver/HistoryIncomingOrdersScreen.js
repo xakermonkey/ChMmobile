@@ -43,7 +43,9 @@ const HistoryIncomingOrders = ({ navigation }) => {
     }, []))
 
     const EmptyComponent = () => {
-        return (<View><Text style={{ color: "white" }}>ПУСТО</Text></View>)
+        return (<View style={{alignItems:'center', marginTop:'30%'}}>
+        <Text style={styles.title}>Не выполнено ни одного заказа</Text>
+        </View>)
     }
 
     return (
@@ -64,8 +66,6 @@ const HistoryIncomingOrders = ({ navigation }) => {
                 </SafeAreaView>
             </LinearGradient>
 
-            <View style={{ marginTop: '4%' }}>
-
                 <View style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, width: '25%', alignSelf: 'center', marginTop: '6%' }}>
                     <Text style={[styles.text400_16, { color: 'white', textAlign: 'center' }]}>{currentDate}</Text>
                 </View>
@@ -75,10 +75,9 @@ const HistoryIncomingOrders = ({ navigation }) => {
                 renderItem={({ ind, item }) => <DriverHistoryOrder item={item} styles={styles}/>}
                 keyExtractor={item => item.id}
                 ListEmptyComponent={<EmptyComponent />}
-                contentContainerStyle={{ paddingTop: "4%", height: "100%" }}
+                // contentContainerStyle={{ paddingTop: "4%", height: "100%" }}
                 // ListFooterComponent={<Line/>}
             />
-            </View>
         </View>
     )
 }

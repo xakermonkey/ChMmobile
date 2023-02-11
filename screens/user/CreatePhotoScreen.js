@@ -142,7 +142,7 @@ const CreatePhotoScreen = ({ navigation }) => {
                     <Text style={styles.title}>{img == null ? "Сделайте фото мусора" : "Для удаления"}</Text>
                     <Text style={[styles.subTitle, { textAlign: 'center' }]}>{img == null ? "сфотографируйте мусор, который необходимо вывезти" : "нажмите на фотографию"}</Text>
                     {img == null ? <Image source={require('../../assets/items/trash_dump.png')} style={{ height: '120%', width: '100%' }} resizeMode='contain' /> :
-                        <TouchableOpacity onPress={() => { setImg(null) }} style={{ height: 500, width: 500, marginTop: 10 }}>
+                        <TouchableOpacity onPress={() => { setImg(null) }} style={{ height: 500, width: 500, marginTop: 10}}>
                             <Image source={{ uri: img.uri }} style={{ height: '100%', width: '100%' }} resizeMode='contain' />
                         </TouchableOpacity>
                     }

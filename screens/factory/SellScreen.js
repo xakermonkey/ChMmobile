@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react'
-import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions } from 'react-native'
+import { KeyboardAwareScrollView, Platform, Text, TextInput, TouchableOpacity, View, Keyboard, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native'
 import { Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -146,7 +146,13 @@ const SellScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={[colorScheme.themeContainerStyle, { flex: 1 }]}>
+<KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      keyboardVerticalOffset={Platform.select({ios: 55, android: 500})}
+      style={[colorScheme.themeContainerStyle, { flex: 1 }]}>
+      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
+        {/* <View style={[colorScheme.themeContainerStyle, { flex: 1 }]}> */}
+
             <StatusBar style={colorScheme.colorScheme === 'dark' ? 'light' : 'dark'} />
             <GeometryBackground />
             <LinearGradient
@@ -165,7 +171,7 @@ const SellScreen = ({ navigation }) => {
             </LinearGradient>
 
             <ScrollView style={{ marginTop: '4%' }}>
-
+            
                 <View style={{ padding: '4%' }}>
                     <Text style={styles.title}>Дата и время</Text>
                     <Text style={styles.subTitle}>дата и время сделки</Text>
@@ -210,15 +216,17 @@ const SellScreen = ({ navigation }) => {
 
                 <View style={{ padding: '4%' }}>
                     <Text style={styles.title}>Итоговая цена</Text>
-                    <Text style={styles.subTitle}></Text>
+                    <Text style={styles.subTitle}>масса * цена за 1 кг</Text>
 
                     <View style={{ backgroundColor: '#f2f2f3', padding: '4%', borderRadius: 20, marginTop: '4%' }}>
                         <Text style={[styles.text400_16, colorScheme.themeTextStyle2]}>{total}</Text>
                     </View>
                 </View>
+                {/* <View style={{ height: 100 }}></View> */}
 
-                <View style={{ height: 100 }}></View>
+        
             </ScrollView>
+
             <BottomSheet
                 ref={BottomDate}
                 index={-1}
@@ -239,8 +247,10 @@ const SellScreen = ({ navigation }) => {
                     />
                 )}
             </BottomSheet>
-
-        </View>
+            
+         {/* </View> */}
+        {/* </TouchableWithoutFeedback> */}
+</KeyboardAvoidingView>
     )
 }
 

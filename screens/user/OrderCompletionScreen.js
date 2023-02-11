@@ -58,22 +58,22 @@ const CreatePhotoScreen = ({ navigation, route }) => {
                 </View>
 
                 <View style={{ paddingHorizontal: '20%' }}>
-                    <TouchableOpacity activeOpacity={0.9} style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}
+                    <TouchableOpacity activeOpacity={0.95} style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}
                         onPress={() => {
                             navigation.dispatch(
                                 CommonActions.reset({
                                     index: 1,
-                                    routes: [{ name: "main_navigator" }, { name: "order_screen" }]
+                                    routes: [{ name: "main_navigator" }]
                                 }));
                         }}  >
                         <Text style={styles.title}>К заказам</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.9} style={{ marginTop: '2%', backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}
+                    <TouchableOpacity activeOpacity={0.95} style={{ marginTop: '2%', backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}
                         onPress={() => {
                             navigation.dispatch(
                                 CommonActions.reset({
                                     index: 1,
-                                    routes: [{ name: "main_navigator" }, { name: "main_screen" }]
+                                    routes: [{ name: "main_navigator" }]
                                 }));
                         }} >
                         <Text style={styles.title}>На главную</Text>

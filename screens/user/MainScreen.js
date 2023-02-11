@@ -2,7 +2,7 @@ import React, { useCallback, useState, useRef } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { Linking, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions, Platform } from 'react-native'
-import { Entypo, Ionicons, AntDesign } from '@expo/vector-icons';
+import { Entypo, Ionicons, EvilIcons } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -42,9 +42,9 @@ const MainScreen = ({ navigation }) => {
                 let { status } = await Location.requestForegroundPermissionsAsync();
                 if (status !== 'granted') {
                     Alert.alert("ALARM", 'Permission to access location was denied');
-                }else{
+                } else {
                     let location = await Location.getCurrentPositionAsync({});
-                    const ad = await Location.reverseGeocodeAsync({latitude: location.coords.latitude, longitude: location.coords.longitude});
+                    const ad = await Location.reverseGeocodeAsync({ latitude: location.coords.latitude, longitude: location.coords.longitude });
                     setAddress(ad[0].name);
                 }
                 setLoading(false);
@@ -105,16 +105,6 @@ const MainScreen = ({ navigation }) => {
         setResultWeb(result);
     }
 
-
-    const Exit = async () => {
-        await AsyncStorage.multiRemove(await AsyncStorage.getAllKeys());
-        navigation.dispatch(
-            CommonActions.reset({
-                index: 0,
-                routes: [{ name: "login_screen" }]
-            }));
-    }
-
     const makeCall = () => {
 
         let phoneNumber = '';
@@ -129,7 +119,7 @@ const MainScreen = ({ navigation }) => {
     };
 
     const nearGrid = () => {
-        return (<ScrollView horizontal={true} style={{ height: 120, marginBottom: '4%' }}>
+        return (<ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ height: 120, marginBottom: '4%' }}>
             {nearestGrid.map(obj => {
                 return (
                     <TouchableOpacity key={obj.id} onPress={() => { navigation.navigate('about_grid_screen') }} activeOpacity={0.9} style={{
@@ -150,7 +140,7 @@ const MainScreen = ({ navigation }) => {
     }
 
     const renderMaterial = () => {
-        return (<ScrollView horizontal={true} style={{ height: 120, marginBottom: '4%' }}>
+        return (<ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ height: 120, marginBottom: '4%' }}>
             {materials.map((obj) => {
                 return (<TouchableOpacity key={obj.id} activeOpacity={0.9} style={{
                     width: 120, height: 120, borderRadius: 20, marginLeft: 15, backgroundColor: '#C7F5FF'
@@ -172,7 +162,7 @@ const MainScreen = ({ navigation }) => {
                     <View style={[styles.rowBetweenCenter, { padding: '3%' }]}>
                         <TouchableOpacity onPress={() => { navigation.navigate('location_screen') }} activeOpacity={0.9} style={[styles.btnHeader, styles.rowBetweenCenter]}>
                             <Entypo name="location-pin" size={24} color={colors.greenText.color} />
-                            <Text style={styles.btnText}>{address}</Text>
+                            <Text style={[styles.btnText]}>{address}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => { navigation.navigate('notifications_screen') }} activeOpacity={0.9} style={[styles.roundBtn, styles.centerCenter]}>
                             <Ionicons name="notifications" size={24} color="black" />
@@ -194,6 +184,7 @@ const MainScreen = ({ navigation }) => {
                 </View>
                 {nearestGrid.length != 0 ? nearGrid() : notFound("Нет сеток поблизости")}
 
+                <Line />
 
                 <View style={[styles.rowBetweenCenter, { padding: '4%' }]}>
                     <View>
@@ -202,7 +193,14 @@ const MainScreen = ({ navigation }) => {
                     </View>
                     <QuestionButton />
                 </View>
-                {lastOrder == null ? notFound("У Вас еще не было заказов") : <View></View>}
+                {lastOrder == null ? notFound("У Вас еще не было заказов") :
+                    <View style={[styles.rowBetweenCenter, { padding: '4%' }]}>
+                            <Text style={styles.title}>Заказ номер 009845</Text>
+                        <TouchableOpacity activeOpacity={0.9} style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: 40, height: 40 }}>
+                            <EvilIcons name="image" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                }
 
 
                 <Line />

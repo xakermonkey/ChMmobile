@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react'
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, CommonActions } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { TouchableOpacity, SafeAreaView, StyleSheet, Text, ScrollView, Image, View, Modal } from 'react-native'
-import { Ionicons, Entypo, EvilIcons } from '@expo/vector-icons';
+import { TouchableOpacity, SafeAreaView, ImageBackground, Text, ScrollView, Image, View, Modal } from 'react-native'
+import { Ionicons, Entypo, AntDesign } from '@expo/vector-icons';
 import MaskInput, { formatWithMask } from 'react-native-mask-input';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -17,6 +17,7 @@ import { FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from "expo-location";
 import OrderItem from '../../components/OrderItem';
+import { Exit } from '../../components/ExitFunc';
 
 const OrderScreen = ({ navigation }) => {
 
@@ -56,7 +57,9 @@ const OrderScreen = ({ navigation }) => {
     }
 
     const EmptyComponent = () => {
-        return (<View><Text style={{ color: "white" }}>ПУСТО</Text></View>)
+        return (<View style={{alignItems:'center', marginTop:'30%'}}>
+        <Text style={styles.title}>У Вас еще нет заказов</Text>
+        </View>)
     }
 
     return (
@@ -91,12 +94,17 @@ const OrderScreen = ({ navigation }) => {
                 visible={modalVisible}
                 animationOut="slide"
                 swipeDirection="down"
+                presentationStyle='formSheet'
             >
-                <SafeAreaView style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }} >
-                    <TouchableOpacity onPress={() => setModalVisible(false)} style={{ width: 60, height: 60 }} ><Text style={{ color: 'black' }}>X</Text></TouchableOpacity>
-                    <Image source={{ uri: domain_domain + uri }} style={{ height: '90%', width: '90%', borderRadius: 5 }} resizeMode='contain' />
-                </SafeAreaView>
-
+                <ImageBackground source={{ uri: domain_domain + uri }}
+                    imageStyle={{}} style={{ }}>
+                    <View style={{ height: '100%', padding: '3%', alignItems: 'flex-start' }}>
+                        <TouchableOpacity onPress={() => setModalVisible(false)} activeOpacity={0.9}
+                            style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
+                            <AntDesign name="close" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                </ImageBackground>
             </Modal>
 
 
@@ -107,6 +115,9 @@ const OrderScreen = ({ navigation }) => {
                 ListEmptyComponent={<EmptyComponent />}
                 contentContainerStyle={{ alignItems: 'center' }}
             />
+            <TouchableOpacity onPress={() => Exit(navigation)} style={{ padding: '3%', width:'20%' }}>
+                <Text style={colorScheme.themeTextStyle} >Выйти</Text>
+            </TouchableOpacity>
         </View>
     )
 }

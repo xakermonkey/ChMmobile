@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react'
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, CommonActions } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { TouchableOpacity, SafeAreaView, StyleSheet, Text, ScrollView, Image, View, FlatList, Modal } from 'react-native'
-import { Ionicons, Entypo } from '@expo/vector-icons';
+import { TouchableOpacity, SafeAreaView, ImageBackground, Text, ScrollView, Image, View, FlatList, Modal } from 'react-native'
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import MaskInput, { formatWithMask } from 'react-native-mask-input';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -15,6 +15,7 @@ import axios from 'axios';
 import { domain, domain_domain } from '../../domain';
 import DriverNewOrderItem from '../../components/DriverNewOrderItem';
 import CurrentOrder from "../../components/СurrentOrder";
+import { Exit } from '../../components/ExitFunc';
 
 const IncomingOrders = ({ navigation }) => {
 
@@ -31,9 +32,9 @@ const IncomingOrders = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
 
     const updateOrder = async () => {
-        try{
+        try {
             const token = await AsyncStorage.getItem("token");
-            const res = await axios.get(domain + "/list_order_driver", {headers: {"Authorization": "Token " + token}});
+            const res = await axios.get(domain + "/list_order_driver", { headers: { "Authorization": "Token " + token } });
             setOrders(res.data.orders);
             setAcceptOrder(res.data.accept_order);
             // if (res.data.accept_order == null){
@@ -42,13 +43,13 @@ const IncomingOrders = ({ navigation }) => {
             //     setTitle("Текущий заказ");
             // }
             setLoading(false);
-        }catch(err){
+        } catch (err) {
             console.log(err);
             setError(true);
         }
     }
 
-    
+
     useFocusEffect(useCallback(() => {
         (async () => {
             await updateOrder();
@@ -56,7 +57,9 @@ const IncomingOrders = ({ navigation }) => {
     }, []))
 
     const EmptyComponent = () => {
-        return (<View><Text style={{ color: "white" }}>ПУСТО</Text></View>)
+        return (<View style={{alignItems:'center', marginTop:'30%'}}>
+            <Text style={styles.title}>Новых заказов нет</Text>
+            </View>)
     }
 
     const openImg = (uri) => {
@@ -80,12 +83,12 @@ const IncomingOrders = ({ navigation }) => {
     const renderList = () => {
         return (
             <FlatList
-            data={orders}
-            keyExtractor={item => item.id}
-            renderItem={({ ind, item }) => <DriverNewOrderItem item={item} styles={styles} openImg={openImg} delOrder={delOrder} setAcceptOrder={setAcceptOrder} />}
-            ListEmptyComponent={<EmptyComponent />}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
+                data={orders}
+                keyExtractor={item => item.id}
+                renderItem={({ ind, item }) => <DriverNewOrderItem item={item} styles={styles} openImg={openImg} delOrder={delOrder} setAcceptOrder={setAcceptOrder} />}
+                ListEmptyComponent={<EmptyComponent />}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
             />
         )
     }
@@ -98,8 +101,11 @@ const IncomingOrders = ({ navigation }) => {
                 colors={colorScheme.gradientHeader} >
                 <SafeAreaView >
                     <View style={[styles.rowBetweenCenter, { padding: '3%' }]}>
-                        <View style={{ flex: 1 }}></View>
-                        <Text style={[{ width: '80%', textAlign: 'center' }, styles.title, colorScheme.themeTextStyle2,]}>{acceptOrder == null ? "Новые заказы" : "Текущий заказ" }</Text>
+                        <TouchableOpacity onPress={() => Exit(navigation)} style={{}}>
+                            <Text style={{}} >Выйти</Text>
+                        </TouchableOpacity>
+                        {/* <View style={{ flex: 1 }}></View> */}
+                        <Text style={[{ width: '50%', textAlign: 'center' }, styles.title, colorScheme.themeTextStyle2,]}>{acceptOrder == null ? "Новые заказы" : "Текущий заказ"}</Text>
                         <TouchableOpacity onPress={() => { navigation.navigate('notifications_screen') }} activeOpacity={0.9}
                             style={{ backgroundColor: 'white', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center', width: 40, height: 40 }}>
                             <Ionicons name="notifications" size={24} color="black" />
@@ -115,20 +121,25 @@ const IncomingOrders = ({ navigation }) => {
                 visible={modalVisible}
                 animationOut="slide"
                 swipeDirection="down"
+                presentationStyle='formSheet'
             >
-                <SafeAreaView style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }} >
-                    <TouchableOpacity onPress={() => setModalVisible(false)} style={{ width: 60, height: 60 }} ><Text style={{ color: 'black' }}>X</Text></TouchableOpacity>
-                    <Image source={{ uri: domain_domain + uri }} style={{ height: '90%', width: '90%', borderRadius: 5 }} resizeMode='contain' />
-                </SafeAreaView>
-
+                <ImageBackground source={{ uri: domain_domain + uri }}
+                    imageStyle={{}} style={{ }}>
+                    <View style={{ height: '100%', padding: '3%', alignItems: 'flex-start' }}>
+                        <TouchableOpacity onPress={() => setModalVisible(false)} activeOpacity={0.9}
+                            style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
+                            <AntDesign name="close" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                </ImageBackground>
             </Modal>
 
             {acceptOrder == null ? renderList() : <CurrentOrder item={acceptOrder} styles={styles} openImg={openImg} />}
 
-                {/* <View style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, width: '25%', alignSelf: 'center', marginTop: '6%' }}>
+            {/* <View style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, width: '25%', alignSelf: 'center', marginTop: '6%' }}>
                     <Text style={[styles.text400_16, { color: 'white', textAlign: 'center' }]}>2 января</Text>
                 </View> */}
-                
+
         </View>
     )
 }

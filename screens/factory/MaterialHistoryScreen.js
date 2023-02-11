@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { domain, domain_domain } from '../../domain';
+import { Exit } from '../../components/ExitFunc';
 
 const MaterialHistoryScreen = ({ navigation }) => {
 
@@ -23,20 +24,20 @@ const MaterialHistoryScreen = ({ navigation }) => {
     const [recycling, setRecycling] = useState([]);
     const [selectMaterial, setSelectMaterial] = useState(0);
 
-    
+
 
     useFocusEffect(useCallback(() => {
         (async () => {
-            try{
+            try {
                 const token = await AsyncStorage.getItem("token");
-            const res = await axios.get(domain + "/main_factory", {headers: {"Authorization": "Token " + token}});
-            setMaterials(res.data.materials);
-            setRecycling(res.data.recycling);
+                const res = await axios.get(domain + "/main_factory", { headers: { "Authorization": "Token " + token } });
+                setMaterials(res.data.materials);
+                setRecycling(res.data.recycling);
             }
-            catch(err){
+            catch (err) {
                 console.log(err);
             }
-            
+
         })();
     }, []))
 
@@ -45,31 +46,31 @@ const MaterialHistoryScreen = ({ navigation }) => {
         return (<View><Text style={{ color: "white" }}>ПУСТО</Text></View>)
     }
 
-    const renderItem = ({item}) => {
+    const renderItem = ({ item }) => {
         return (<View style={{ padding: '4%' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Image source={{ uri: domain_domain + item.photo }} style={{
-                width: 120, height: 120, borderRadius: 20,
-            }} />
-            <View style={{ marginLeft: '2%', width: '60%' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image source={{ uri: domain_domain + item.photo }} style={{
+                    width: 120, height: 120, borderRadius: 20,
+                }} />
+                <View style={{ marginLeft: '2%', width: '60%' }}>
 
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View>
-                        <Text style={styles.subTitle}>дата</Text>
-                        <Text style={styles.text400_16}>{item.date.split(" ")[0]}</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View>
+                            <Text style={styles.subTitle}>дата</Text>
+                            <Text style={styles.text400_16}>{item.date.split(" ")[0]}</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.subTitle}>время</Text>
+                            <Text style={styles.text400_16}>{item.date.split(" ")[1]}</Text>
+                        </View>
                     </View>
-                    <View>
-                        <Text style={styles.subTitle}>время</Text>
-                        <Text style={styles.text400_16}>{item.date.split(" ")[1]}</Text>
-                    </View>
+                    <Text style={styles.subTitle}>масса</Text>
+                    <Text style={styles.text400_16}>{item.mass} кг</Text>
+                    <Line />
                 </View>
-                <Text style={styles.subTitle}>масса</Text>
-                <Text style={styles.text400_16}>{item.mass} кг</Text>
-                <Line />
             </View>
-        </View>
-    </View>)
+        </View>)
     }
 
     return (
@@ -80,8 +81,10 @@ const MaterialHistoryScreen = ({ navigation }) => {
                 colors={colorScheme.gradientHeader} >
                 <SafeAreaView >
                     <View style={[styles.rowBetweenCenter, { padding: '3%' }]}>
-                        <View style={{ flex: 1 }}></View>
-                        <Text style={[{ width: '80%', textAlign: 'center' }, styles.title, colorScheme.themeTextStyle2,]}>История переработок</Text>
+                        <TouchableOpacity onPress={() => Exit(navigation)} style={{}}>
+                            <Text style={{}} >Выйти</Text>
+                        </TouchableOpacity>
+                        <Text style={[{ width: '70%', textAlign: 'center' }, styles.title, colorScheme.themeTextStyle2,]}>История переработок</Text>
                         <TouchableOpacity onPress={() => { navigation.navigate('add_material_screen') }} activeOpacity={0.9}
                             style={{ backgroundColor: 'white', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center', width: 40, height: 40 }}>
                             <AntDesign name="plus" size={24} color="black" />
@@ -104,25 +107,19 @@ const MaterialHistoryScreen = ({ navigation }) => {
                             setSelectMaterial(itemValue)
                         }>
                         <Picker.Item label="Все" value={0} />
-                        {materials.map(obj =>  <Picker.Item label={obj.type} value={obj.id} key={obj.id} />)}
+                        {materials.map(obj => <Picker.Item label={obj.type} value={obj.id} key={obj.id} />)}
 
                     </Picker>
                 </View>
 
                 <Line />
-                
-                <FlatList 
-                data={selectMaterial == 0 ? recycling : recycling.filter(item => item.type == selectMaterial)}
-                keyExtractor={item => item.id}
-                renderItem={renderItem}
-                ListEmptyComponent={<EmptyComponent />}
-                />
-                
 
-                {/* <TouchableOpacity activeOpacity={0.9} style={{ padding: '4%' }}>
-                    <Text style={{ color: '#0000004F', fontSize: 12 }}>Выход</Text>
-                </TouchableOpacity> */}
-                <View style={{ height: 100 }}></View>
+                <FlatList
+                    data={selectMaterial == 0 ? recycling : recycling.filter(item => item.type == selectMaterial)}
+                    keyExtractor={item => item.id}
+                    renderItem={renderItem}
+                    ListEmptyComponent={<EmptyComponent />}
+                />
             </View>
         </View>
     )

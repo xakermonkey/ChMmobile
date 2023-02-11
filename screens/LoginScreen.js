@@ -76,23 +76,23 @@ const LoginScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <View style={styles.keyboard}>
                     <View style={styles.row} >
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('1')}  ><Text style={[styles.title]} >1</Text></TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('2')}><Text style={[styles.title]}>2</Text></TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('3')}><Text style={[styles.title]}>3</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('1')}  ><Text style={[styles.title, {color:'white'}]} >1</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('2')}><Text style={[styles.title, {color:'white'}]}>2</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('3')}><Text style={[styles.title, {color:'white'}]}>3</Text></TouchableOpacity>
                     </View>
                     <View style={styles.row}>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('4')}><Text style={[styles.title]}>4</Text></TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('5')}><Text style={[styles.title]}>5</Text></TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('6')}><Text style={[styles.title]}>6</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('4')}><Text style={[styles.title, {color:'white'}]}>4</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('5')}><Text style={[styles.title, {color:'white'}]}>5</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('6')}><Text style={[styles.title, {color:'white'}]}>6</Text></TouchableOpacity>
                     </View>
                     <View style={styles.row}>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('7')}><Text style={[styles.title]}>7</Text></TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('8')}><Text style={[styles.title]}>8</Text></TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('9')}><Text style={[styles.title]}>9</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('7')}><Text style={[styles.title, {color:'white'}]}>7</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('8')}><Text style={[styles.title, {color:'white'}]}>8</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('9')}><Text style={[styles.title, {color:'white'}]}>9</Text></TouchableOpacity>
                     </View>
                     <View style={styles.row}>
                         <TouchableOpacity style={[styles.btn, colorScheme.themeContainerStyle]} ><Text></Text></TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('0')}><Text style={[styles.title]}>0</Text></TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: '#549D41'}]} activeOpacity={0.5} onPress={() => Click('0')}><Text style={[styles.title, {color:'white'}]}>0</Text></TouchableOpacity>
                         <TouchableOpacity style={[styles.btn, colorScheme.themeContainerStyle]} activeOpacity={0.5} onPress={() => Click('del')}><Ionicons name="backspace-outline" size={28} color={colorScheme.colorScheme === 'light' ? '#5e6f64' : '#F2F2F3'} /></TouchableOpacity>
                     </View>
                 </View>

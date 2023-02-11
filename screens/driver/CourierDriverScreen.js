@@ -65,7 +65,9 @@ const CourierDriver = ({ navigation }) => {
 
 
     const EmptyComponent = () => {
-        return (<View><Text style={{ color: "white" }}>ПУСТО</Text></View>)
+        return (<View style={{alignItems:'center', marginTop:'30%'}}>
+        <Text style={styles.title}>Задач по сеткам нет</Text>
+        </View>)
     }
 
     const openImg = (uri) => {
@@ -88,9 +90,10 @@ const CourierDriver = ({ navigation }) => {
 
     const renderList = () => {
         return (
-            <View>
-                <View style={{ padding: '4%' }} ><Text style={styles.title}>Замечания клиентов</Text>
-                    <Text style={styles.subTitle}>эти заказы от клиентов, которые считают, что сетка заполнена</Text>
+            <View style={{height:'100%'}}>
+                <View style={{ padding: '4%' }} >
+                    {/* <Text style={styles.title}>Замечания клиентов</Text> */}
+                    <Text style={[styles.subTitle, {textAlign:'center'}]}>здесь также отбражаются замечания от клиентов, которые считают, что сетка заполнена</Text>
                 </View>
                 <FlatList
                     data={entry}
@@ -99,7 +102,7 @@ const CourierDriver = ({ navigation }) => {
                     ListEmptyComponent={<EmptyComponent />}
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    ListFooterComponent={<View style={{ height: 100 }}></View>}
+                    // ListFooterComponent={<View style={{ height: 100 }}></View>}
                 />
             </View>
         )
@@ -113,10 +116,8 @@ const CourierDriver = ({ navigation }) => {
                 colors={colorScheme.gradientHeader} >
                 <SafeAreaView >
                     <View style={[styles.rowBetweenCenter, { padding: '3%' }]}>
-                        <TouchableOpacity onPress={() => { navigation.navigate('location_screen') }} activeOpacity={0.9} style={[styles.btnHeader, styles.rowBetweenCenter]}>
-                            <Entypo name="location-pin" size={24} color={colors.greenText.color} />
-                            <Text style={styles.btnText}>СНТ Солнечный Яр</Text>
-                        </TouchableOpacity>
+                        <View style={{flex:1}}></View>
+                        <Text style={[{ width: '80%', textAlign: 'center' }, styles.title, colorScheme.themeTextStyle2,]}>Задачи по сеткам</Text>
                         <TouchableOpacity onPress={() => { navigation.navigate('notifications_screen') }} activeOpacity={0.9} style={[styles.roundBtn, styles.centerCenter]}>
                             <Ionicons name="notifications" size={24} color="black" />
                         </TouchableOpacity>

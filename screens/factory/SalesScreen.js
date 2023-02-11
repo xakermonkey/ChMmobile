@@ -41,7 +41,9 @@ const SalesScreen = ({ navigation }) => {
 
 
     const EmptyComponent = () => {
-        return (<View><Text style={{ color: "white" }}>ПУСТО</Text></View>)
+        return (<View style={{alignItems:'center', marginTop:'30%'}}>
+        <Text style={styles.title}>Сделак еще нет</Text>
+        </View>)
     }
 
 
@@ -113,7 +115,7 @@ const SalesScreen = ({ navigation }) => {
             <Line />
 
             <FlatList 
-                data={selectMaterial == 0 ? saleRecycling : saleRecycling.filter(item => item.type == selectedMaterial)}
+                data={selectedMaterial == 0 ? saleRecycling : saleRecycling.filter(item => item.type == selectedMaterial)}
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
                 ListEmptyComponent={<EmptyComponent />}
