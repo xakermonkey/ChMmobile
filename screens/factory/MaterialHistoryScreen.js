@@ -23,28 +23,41 @@ const MaterialHistoryScreen = ({ navigation }) => {
     const [materials, setMaterials] = useState([]);
     const [recycling, setRecycling] = useState([]);
     const [selectMaterial, setSelectMaterial] = useState(0);
+    const [refreshing, setRefreshing] = useState(false);
+
+
+    const updateHistory = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            const res = await axios.get(domain + "/main_factory", { headers: { "Authorization": "Token " + token } });
+            setMaterials(res.data.materials);
+            setRecycling(res.data.recycling);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
 
 
 
     useFocusEffect(useCallback(() => {
         (async () => {
-            try {
-                const token = await AsyncStorage.getItem("token");
-                const res = await axios.get(domain + "/main_factory", { headers: { "Authorization": "Token " + token } });
-                setMaterials(res.data.materials);
-                setRecycling(res.data.recycling);
-            }
-            catch (err) {
-                console.log(err);
-            }
-
+            await updateHistory();
         })();
     }, []))
 
 
     const EmptyComponent = () => {
         return (<View><Text style={{ color: "white" }}>ПУСТО</Text></View>)
+
     }
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await updateHistory();
+        setRefreshing(false);
+    }
+
 
     const renderItem = ({ item }) => {
         return (<View style={{ padding: '4%' }}>
@@ -119,6 +132,9 @@ const MaterialHistoryScreen = ({ navigation }) => {
                     keyExtractor={item => item.id}
                     renderItem={renderItem}
                     ListEmptyComponent={<EmptyComponent />}
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    ListFooterComponent={<View style={{ height: 420}} ></View>}
                 />
             </View>
         </View>

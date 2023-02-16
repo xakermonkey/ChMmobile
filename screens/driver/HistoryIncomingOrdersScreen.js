@@ -25,26 +25,38 @@ const HistoryIncomingOrders = ({ navigation }) => {
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
     const [currentDate, setCurrentDate] = useState("");
+    const [refreshing, setRefreshing] = useState(false);
+
+
+    const updateHistory = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            const res = await axios.get(domain + "/history_list_order_driver", { headers: { "Authorization": "Token " + token } });
+            setOrders(res.data.orders);
+            setCurrentDate(res.data.orders[0].date_create.split(" ")[0])
+            setLoading(false);
+        } catch (err) {
+            console.log(err);
+            setError(true);
+        }
+    }
 
     useFocusEffect(useCallback(() => {
         (async () => {
-            try{
-                const token = await AsyncStorage.getItem("token");
-                const res = await axios.get(domain + "/history_list_order_driver", {headers: {"Authorization": "Token " + token}});
-                setOrders(res.data.orders);
-                setCurrentDate(res.data.orders[0].date_create.split(" ")[0])
-                setLoading(false);
-            }catch(err){
-                console.log(err);
-                setError(true);
-            }
-
+            await updateHistory();
         })();
     }, []))
 
+
+    const onRefresh = async () => {
+        setLoading(true);
+        await updateHistory()
+        setLoading(false);
+    }
+
     const EmptyComponent = () => {
-        return (<View style={{alignItems:'center', marginTop:'30%'}}>
-        <Text style={styles.title}>Не выполнено ни одного заказа</Text>
+        return (<View style={{ alignItems: 'center', marginTop: '30%' }}>
+            <Text style={styles.title}>Не выполнено ни одного заказа</Text>
         </View>)
     }
 
@@ -66,17 +78,19 @@ const HistoryIncomingOrders = ({ navigation }) => {
                 </SafeAreaView>
             </LinearGradient>
 
-                <View style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, width: '25%', alignSelf: 'center', marginTop: '6%' }}>
-                    <Text style={[styles.text400_16, { color: 'white', textAlign: 'center' }]}>{currentDate}</Text>
-                </View>
+            <View style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, width: '25%', alignSelf: 'center', marginTop: '6%' }}>
+                <Text style={[styles.text400_16, { color: 'white', textAlign: 'center' }]}>{currentDate}</Text>
+            </View>
 
-                <FlatList
+            <FlatList
                 data={orders}
-                renderItem={({ ind, item }) => <DriverHistoryOrder item={item} styles={styles}/>}
+                renderItem={({ ind, item }) => <DriverHistoryOrder item={item} styles={styles} />}
                 keyExtractor={item => item.id}
                 ListEmptyComponent={<EmptyComponent />}
-                // contentContainerStyle={{ paddingTop: "4%", height: "100%" }}
-                // ListFooterComponent={<Line/>}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+            // contentContainerStyle={{ paddingTop: "4%", height: "100%" }}
+            // ListFooterComponent={<Line/>}
             />
         </View>
     )

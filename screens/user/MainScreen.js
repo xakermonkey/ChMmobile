@@ -1,7 +1,7 @@
-import React, { useCallback, useState, useRef } from 'react'
+import React, { useCallback, useState, useRef, useLayoutEffect } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { Linking, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions, Platform } from 'react-native'
+import { Linking, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions, Platform, Alert } from 'react-native'
 import { Entypo, Ionicons, EvilIcons } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { Video, AVPlaybackStatus } from 'expo-av';
@@ -27,25 +27,51 @@ const MainScreen = ({ navigation }) => {
     const [error, setError] = useState(false);
     const [nearestGrid, setNearesGrid] = useState([]);
     const [address, setAddress] = useState("");
+    const [showAddress, setShowAddress] = useState(true);
+    const [locationPermission, setLocationPermission] = useState(false);
+
+
+    useLayoutEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    Alert.alert("ALARM", 'Permission to access location was denied');
+                    setShowAddress(false);
+                    setLocationPermission(false);
+                }
+
+        })();
+    }, [address, locationPermission])
 
     useFocusEffect(useCallback(() => {
         (async () => {
             try {
+                let location = null;
                 const token = await AsyncStorage.getItem("token");
+                if (locationPermission){
+                    location = await Location.getLastKnownPositionAsync({});
+                    // const ad = await Location.reverseGeocodeAsync({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+                    // setAddress(ad[0].name);
+                }
                 const res = await axios.get(domain + "/main_user", {
                     headers: {
                         "Authorization": "Token " + token
+                    },
+                    params: {
+                        lat: location?.coords.latitude,
+                        lon: location?.coords.longitude
                     }
                 });
                 setLastOrder(res.data.order);
                 setMaterials(res.data.materials);
-                let { status } = await Location.requestForegroundPermissionsAsync();
-                if (status !== 'granted') {
-                    Alert.alert("ALARM", 'Permission to access location was denied');
-                } else {
-                    let location = await Location.getCurrentPositionAsync({});
+                if (res.data.trash_point != null) {
+                    setAddress(res.data.trash_point.name);
+                } else if (location != null) {
                     const ad = await Location.reverseGeocodeAsync({ latitude: location.coords.latitude, longitude: location.coords.longitude });
                     setAddress(ad[0].name);
+                }
+                if (res.data.grids != null){
+                    setNearesGrid(res.data.grids);
                 }
                 setLoading(false);
             }
@@ -54,7 +80,7 @@ const MainScreen = ({ navigation }) => {
                 setError(true);
             }
         })();
-    }, []))
+    }, [locationPermission]))
 
     const colorScheme = styleScheme();
     const styles = colorScheme.styles;
@@ -160,10 +186,10 @@ const MainScreen = ({ navigation }) => {
                 colors={colorScheme.gradientHeader} >
                 <SafeAreaView >
                     <View style={[styles.rowBetweenCenter, { padding: '3%' }]}>
-                        <TouchableOpacity onPress={() => { navigation.navigate('location_screen') }} activeOpacity={0.9} style={[styles.btnHeader, styles.rowBetweenCenter]}>
+                        {showAddress ? <TouchableOpacity onPress={() => { navigation.navigate('location_screen') }} activeOpacity={0.9} style={[styles.btnHeader, styles.rowBetweenCenter]}>
                             <Entypo name="location-pin" size={24} color={colors.greenText.color} />
                             <Text style={[styles.btnText]}>{address}</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> : <View></View>}
                         <TouchableOpacity onPress={() => { navigation.navigate('notifications_screen') }} activeOpacity={0.9} style={[styles.roundBtn, styles.centerCenter]}>
                             <Ionicons name="notifications" size={24} color="black" />
                         </TouchableOpacity>
@@ -195,7 +221,7 @@ const MainScreen = ({ navigation }) => {
                 </View>
                 {lastOrder == null ? notFound("У Вас еще не было заказов") :
                     <View style={[styles.rowBetweenCenter, { padding: '4%' }]}>
-                            <Text style={styles.title}>Заказ номер 009845</Text>
+                        <Text style={styles.title}>Заказ номер {"0".repeat(5 - lastOrder.id.toString().length) + lastOrder.id}</Text>
                         <TouchableOpacity activeOpacity={0.9} style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: 40, height: 40 }}>
                             <EvilIcons name="image" size={24} color="white" />
                         </TouchableOpacity>

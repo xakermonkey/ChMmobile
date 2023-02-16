@@ -15,7 +15,10 @@ const DriverNewOrderItem = ({ item, styles, openImg, delOrder, setAcceptOrder })
     const [check, setCheck] = useState(false);
 
     const getStatus = () => {
-        if (item.date_accept == null && item.date_complite == null) {
+        if (item.date_cancel != null){
+            return "Отменен";
+        }
+        else if (item.date_accept == null && item.date_complite == null) {
             return "Создан";
         } else if (item.date_accept != null && item.date_complite == null) {
             return "В обработке";

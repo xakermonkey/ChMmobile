@@ -42,6 +42,7 @@ const CourierDriver = ({ navigation }) => {
     const [acceptEntry, setAcceptEntry] = useState(null);
     const [uri, setUri] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [error, setError] = useState(false);
 
     const updateGrid = async () => {
         try {
@@ -139,7 +140,7 @@ const CourierDriver = ({ navigation }) => {
                 </SafeAreaView>
 
             </Modal>
-            {acceptEntry == null ? renderList() : <CurrentGrid item={acceptEntry} colorScheme={colorScheme} setLoading={setLoading} setAcceptEntry={setAcceptEntry} />}
+            {acceptEntry == null ? renderList() : <CurrentGrid item={acceptEntry} colorScheme={colorScheme} setLoading={setLoading} setAcceptEntry={setAcceptEntry} delEntry={delEntry} />}
 
             {/* <Line />  */}
 

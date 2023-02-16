@@ -19,35 +19,40 @@ const SalesScreen = ({ navigation }) => {
     const colorScheme = styleScheme();
     const styles = colorScheme.styles;
 
-    const [selectedMaterial, setSelectedmaterial] = useState();
+    const [selectedMaterial, setSelectedmaterial] = useState(0);
     const [materials, setMaterials] = useState([]);
     const [saleRecycling, setSaleRecycling] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+
+
+    const updateHistory = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            const res = await axios.get(domain + "/sale_recycling", { headers: { "Authorization": "Token " + token } });
+            setMaterials(res.data.materials);
+            setSaleRecycling(res.data.sale_recycling);
+            console.log(res.data);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
 
     useFocusEffect(useCallback(() => {
         (async () => {
-            try {
-                const token = await AsyncStorage.getItem("token");
-                const res = await axios.get(domain + "/sale_recycling", { headers: { "Authorization": "Token " + token } });
-                setMaterials(res.data.materials);
-                setSaleRecycling(res.data.sale_recycling);
-                console.log(res.data);
-            }
-            catch (err) {
-                console.log(err);
-            }
-
+            await updateHistory();
         })();
     }, []))
 
 
     const EmptyComponent = () => {
-        return (<View style={{alignItems:'center', marginTop:'30%'}}>
-        <Text style={styles.title}>Сделак еще нет</Text>
+        return (<View style={{ alignItems: 'center', marginTop: '30%' }}>
+            <Text style={styles.title}>Сделок еще нет</Text>
         </View>)
     }
 
 
-    const renderItem = ({item}) => {
+    const renderItem = ({ item }) => {
         return (<View style={{ width: '100%', padding: '4%' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View>
@@ -75,6 +80,12 @@ const SalesScreen = ({ navigation }) => {
             <Text style={styles.subTitle}>стоимость, руб</Text>
             <Text style={styles.text400_16}>{item.total_price}</Text>
         </View>)
+    }
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await updateHistory();
+        setRefreshing(false);
     }
 
     return (
@@ -114,12 +125,15 @@ const SalesScreen = ({ navigation }) => {
 
             <Line />
 
-            <FlatList 
+            <FlatList
                 data={selectedMaterial == 0 ? saleRecycling : saleRecycling.filter(item => item.type == selectedMaterial)}
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
                 ListEmptyComponent={<EmptyComponent />}
-                />
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                // ListFooterComponent={<View style={{ height: 420 }} ></View>}
+            />
         </View>
     )
 }

@@ -9,7 +9,10 @@ import { Ionicons, Entypo, EvilIcons } from '@expo/vector-icons';
 
 const OrderItem = ({ item, styles, openImg }) => {
     const getStatus = () => {
-        if (item.date_accept == null && item.date_complite == null) {
+        if (item.date_cancel != null){
+            return "Отменен";
+        }
+        else if (item.date_accept == null && item.date_complite == null) {
             return "Создан";
         } else if (item.date_accept != null && item.date_complite == null) {
             return "В обработке";
