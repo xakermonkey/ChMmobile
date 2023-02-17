@@ -10,10 +10,10 @@ import { domain } from '../domain';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CurrentOrder = ({item, styles, openImg, setAcceptOrder}) => {
+const CurrentOrder = ({ item, styles, openImg, setAcceptOrder, delOrder, onRefresh }) => {
 
     const getStatus = () => {
-        if (item.date_cancel != null){
+        if (item.date_cancel != null) {
             return "Отменен";
         }
         else if (item.date_accept == null && item.date_complite == null) {
@@ -27,21 +27,23 @@ const CurrentOrder = ({item, styles, openImg, setAcceptOrder}) => {
     const [address, setAddress] = useState("");
 
     const completeOrder = async () => {
-      try {
-          const token = await AsyncStorage.getItem("token");
-          const res = await axios.post(domain + "/complete_order", { "id": item.id }, { headers: { "Authorization": "Token " + token } });
-          setAcceptOrder(null);
-      } catch (err) {
-          Alert.alert("Ошибка", "Данные заказ уже в обработке")
-      }
-  }
+        try {
+            const token = await AsyncStorage.getItem("token");
+            const res = await axios.post(domain + "/complete_order", { "id": item.id }, { headers: { "Authorization": "Token " + token } });
+            // setAcceptOrder(null);
+            // delOrder(item.id);
+            await onRefresh();
+        } catch (err) {
+            Alert.alert("Ошибка", "Данные заказ уже в обработке")
+        }
+    }
 
     useEffect(() => {
         (async () => {
-            const add = await Location.reverseGeocodeAsync({latitude: item.address.location.coordinates[1], longitude: item.address.location.coordinates[0]})
+            const add = await Location.reverseGeocodeAsync({ latitude: item.address.location.coordinates[1], longitude: item.address.location.coordinates[0] })
             setAddress(add[0].name);
         })();
-        
+
     }, [])
 
 
@@ -98,7 +100,7 @@ const CurrentOrder = ({item, styles, openImg, setAcceptOrder}) => {
           </TouchableOpacity> */}
                 <TouchableOpacity activeOpacity={0.9} onPress={() => openImg(item.photo)} style={{ backgroundColor: '#ACACAC', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
                     <Text style={{ color: "white" }}>Фото</Text>
-                </TouchableOpacity> 
+                </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.9} onPress={completeOrder} style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
                     <Text style={{ color: "white" }}>Выполнено</Text>
                 </TouchableOpacity>

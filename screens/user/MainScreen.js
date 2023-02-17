@@ -1,8 +1,8 @@
 import React, { useCallback, useState, useRef, useLayoutEffect } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { Linking, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions, Platform, Alert } from 'react-native'
-import { Entypo, Ionicons, EvilIcons } from '@expo/vector-icons';
+import { Linking, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions, Platform, Alert, Modal, ImageBackground } from 'react-native'
+import { Entypo, Ionicons, EvilIcons, AntDesign } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,16 +29,16 @@ const MainScreen = ({ navigation }) => {
     const [address, setAddress] = useState("");
     const [showAddress, setShowAddress] = useState(true);
     const [locationPermission, setLocationPermission] = useState(false);
-
+    const [modalVisible, setModalVisible] = useState(false);
 
     useLayoutEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
-                if (status !== 'granted') {
-                    Alert.alert("ALARM", 'Permission to access location was denied');
-                    setShowAddress(false);
-                    setLocationPermission(false);
-                }
+            if (status !== 'granted') {
+                Alert.alert("ALARM", 'Permission to access location was denied');
+                setShowAddress(false);
+                setLocationPermission(false);
+            }
 
         })();
     }, [address, locationPermission])
@@ -46,13 +46,8 @@ const MainScreen = ({ navigation }) => {
     useFocusEffect(useCallback(() => {
         (async () => {
             try {
-                let location = null;
                 const token = await AsyncStorage.getItem("token");
-                if (locationPermission){
-                    location = await Location.getLastKnownPositionAsync({});
-                    // const ad = await Location.reverseGeocodeAsync({ latitude: location.coords.latitude, longitude: location.coords.longitude });
-                    // setAddress(ad[0].name);
-                }
+                let location = await Location.getLastKnownPositionAsync();
                 const res = await axios.get(domain + "/main_user", {
                     headers: {
                         "Authorization": "Token " + token
@@ -70,7 +65,7 @@ const MainScreen = ({ navigation }) => {
                     const ad = await Location.reverseGeocodeAsync({ latitude: location.coords.latitude, longitude: location.coords.longitude });
                     setAddress(ad[0].name);
                 }
-                if (res.data.grids != null){
+                if (res.data.grids != null) {
                     setNearesGrid(res.data.grids);
                 }
                 setLoading(false);
@@ -148,11 +143,11 @@ const MainScreen = ({ navigation }) => {
         return (<ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ height: 120, marginBottom: '4%' }}>
             {nearestGrid.map(obj => {
                 return (
-                    <TouchableOpacity key={obj.id} onPress={() => { navigation.navigate('about_grid_screen') }} activeOpacity={0.9} style={{
+                    <TouchableOpacity key={obj.name} onPress={() => { navigation.navigate('about_grid_screen') }} activeOpacity={0.9} style={{
                         width: 120, height: 120, borderRadius: 20, marginLeft: 15, backgroundColor: '#C7F5FF'
                     }}>
-                        <Text style={[styles.title, colorScheme.themeTextStyle2, { top: '10%', left: '10%' }]}>Металл</Text>
-                        <Image source={require('../../assets/items/metal.png')} style={{ height: 120, width: 120 }} resizeMode='contain' />
+                        <Text style={[styles.title, colorScheme.themeTextStyle2, { top: '10%', left: '10%' }]}>{obj.name}</Text>
+                        <Image source={obj.photo == null ? require('../../assets/items/metal.png') : { uri: obj.photo }} style={{ height: 120, width: 120 }} resizeMode='contain' />
                     </TouchableOpacity>)
             })}
 
@@ -197,6 +192,8 @@ const MainScreen = ({ navigation }) => {
                 </SafeAreaView>
             </LinearGradient>
 
+
+
             <ScrollView>
                 <CleanWorld />
 
@@ -220,9 +217,32 @@ const MainScreen = ({ navigation }) => {
                     <QuestionButton />
                 </View>
                 {lastOrder == null ? notFound("У Вас еще не было заказов") :
+
                     <View style={[styles.rowBetweenCenter, { padding: '4%' }]}>
+                        <Modal
+                            animationType="slide"
+                            //animationInTiming = {13900}
+                            // transparent={true}
+                            visible={modalVisible}
+                            animationOut="slide"
+                            swipeDirection="down"
+                            presentationStyle='formSheet'
+                        >
+                            <SafeAreaView style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }} >
+                                <ImageBackground source={{ uri: domain_domain + lastOrder.photo }}
+                                    imageStyle={{}} style={{}}>
+                                    <View style={{ height: '100%', width: "100%", padding: '3%', alignItems: 'flex-start' }}>
+                                        <TouchableOpacity onPress={() => setModalVisible(false)} activeOpacity={0.9}
+                                            style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                            <AntDesign name="close" size={24} color="white" />
+                                        </TouchableOpacity>
+                                    </View>
+                                </ImageBackground>
+                            </SafeAreaView>
+
+                        </Modal>
                         <Text style={styles.title}>Заказ номер {"0".repeat(5 - lastOrder.id.toString().length) + lastOrder.id}</Text>
-                        <TouchableOpacity activeOpacity={0.9} style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: 40, height: 40 }}>
+                        <TouchableOpacity onPress={() => setModalVisible(true)} activeOpacity={0.9} style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: 40, height: 40 }}>
                             <EvilIcons name="image" size={24} color="white" />
                         </TouchableOpacity>
                     </View>

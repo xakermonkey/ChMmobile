@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useRef } from 'react'
 import { useFocusEffect, CommonActions } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { TouchableOpacity, SafeAreaView, ImageBackground, Text, ScrollView, Image, View, Modal } from 'react-native'
@@ -30,17 +30,45 @@ const OrderScreen = ({ navigation }) => {
     const [date, setDate] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [uri, setUri] = useState(null);
+    const [address, setAddress] = useState("");
+    const [showAddress, setShowAddress] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+
+    const updateOrder = async () => {
+        const token = await AsyncStorage.getItem("token");
+        const res = await axios.get(domain + "/list_order_user", {
+            headers: {
+                "Authorization": "Token " + token
+            }
+        });
+        setOrders(res.data.orders);
+    }
 
     useFocusEffect(useCallback(() => {
         (async () => {
             try {
+                let location = await Location.getLastKnownPositionAsync();
+                if (location != null) {
+                    setShowAddress(true);
+                }
                 const token = await AsyncStorage.getItem("token");
                 const res = await axios.get(domain + "/list_order_user", {
                     headers: {
                         "Authorization": "Token " + token
+                    },
+                    params: {
+                        lat: location?.coords.latitude,
+                        lon: location?.coords.longitude
                     }
                 });
-                setOrders(res.data.orders)
+                setOrders(res.data.orders);
+                if (res.data.trash_point != null) {
+                    setAddress(res.data.trash_point.name);
+                } else if (location != null) {
+                    const ad = await Location.reverseGeocodeAsync({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+                    setAddress(ad[0].name);
+                }
                 setLoading(false);
                 setDate(res.data.orders[0].date_create.split(" ")[0]);
             }
@@ -57,10 +85,26 @@ const OrderScreen = ({ navigation }) => {
     }
 
     const EmptyComponent = () => {
-        return (<View style={{alignItems:'center', marginTop:'30%'}}>
-        <Text style={styles.title}>У Вас еще нет заказов</Text>
+        return (<View style={{ alignItems: 'center', marginTop: '30%' }}>
+            <Text style={styles.title}>У Вас еще нет заказов</Text>
         </View>)
     }
+
+    const onRefresh = async () =>{
+        setRefreshing(true);
+        await updateOrder();
+        setRefreshing(false);
+    }
+
+
+    const onViewableItemsChanged = ({
+        viewableItems,
+    }) => {
+        setDate(viewableItems[0].item.date_create.split(" ")[0]);
+    };
+    const viewabilityConfigCallbackPairs = useRef([
+        { onViewableItemsChanged },
+    ]);
 
     return (
         <View style={[colorScheme.themeContainerStyle, { flex: 1 }]}>
@@ -69,10 +113,10 @@ const OrderScreen = ({ navigation }) => {
                 colors={colorScheme.gradientHeader} >
                 <SafeAreaView >
                     <View style={[styles.rowBetweenCenter, { padding: '3%' }]}>
-                        <TouchableOpacity onPress={() => { navigation.navigate('location_screen') }} activeOpacity={0.9} style={[styles.btnHeader, styles.rowBetweenCenter]}>
+                        {showAddress ? <TouchableOpacity onPress={() => { navigation.navigate('location_screen') }} activeOpacity={0.9} style={[styles.btnHeader, styles.rowBetweenCenter]}>
                             <Entypo name="location-pin" size={24} color={colors.greenText.color} />
-                            <Text style={styles.btnText}>СНТ Солнечный Яр</Text>
-                        </TouchableOpacity>
+                            <Text style={styles.btnText}>{address}</Text>
+                        </TouchableOpacity> : <View></View>}
                         <TouchableOpacity onPress={() => { navigation.navigate('notifications_screen') }} activeOpacity={0.9} style={[styles.roundBtn, styles.centerCenter]}>
                             <Ionicons name="notifications" size={24} color="black" />
                         </TouchableOpacity>
@@ -97,7 +141,7 @@ const OrderScreen = ({ navigation }) => {
                 presentationStyle='formSheet'
             >
                 <ImageBackground source={{ uri: domain_domain + uri }}
-                    imageStyle={{}} style={{ }}>
+                    imageStyle={{}} style={{}}>
                     <View style={{ height: '100%', padding: '3%', alignItems: 'flex-start' }}>
                         <TouchableOpacity onPress={() => setModalVisible(false)} activeOpacity={0.9}
                             style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
@@ -114,8 +158,11 @@ const OrderScreen = ({ navigation }) => {
                 keyExtractor={item => item.id}
                 ListEmptyComponent={<EmptyComponent />}
                 contentContainerStyle={{ alignItems: 'center' }}
+                viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
             />
-            <TouchableOpacity onPress={() => Exit(navigation)} style={{ padding: '3%', width:'20%' }}>
+            <TouchableOpacity onPress={() => Exit(navigation)} style={{ padding: '3%', width: '20%' }}>
                 <Text style={colorScheme.themeTextStyle} >Выйти</Text>
             </TouchableOpacity>
         </View>

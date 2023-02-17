@@ -20,6 +20,19 @@ const OrderItem = ({ item, styles, openImg }) => {
             return "Выполнен"
         }
     }
+
+    const getColor = () => {
+        if (item.date_cancel != null){
+            return "red"
+        }
+        else if (item.date_accept == null && item.date_complite == null) {
+            return "yellow";
+        } else if (item.date_accept != null && item.date_complite == null) {
+            return "yellow";
+        } else {
+            return "green"
+        }
+    }
     const [address, setAddress] = useState("");
 
     useEffect(() => {
@@ -38,7 +51,7 @@ const OrderItem = ({ item, styles, openImg }) => {
             </View>
             <View>
                 <Text style={styles.subTitle}>статус</Text>
-                <Text style={styles.btnText}>{getStatus()}</Text>
+                <Text style={[styles.btnText, {color: getColor()}]}>{getStatus()}</Text>
             </View>
         </View>
         <Line />
@@ -46,11 +59,11 @@ const OrderItem = ({ item, styles, openImg }) => {
         <View style={{ flexDirection: 'row' }}>
             <View style={{ width: '70%' }}>
                 <Text style={styles.subTitle}>время заказа</Text>
-                <Text style={styles.text400_16}>{item.date_create.split(" ")[1]}</Text>
+                <Text style={styles.text400_16}>{item.date_create}</Text>
             </View>
             <View>
                 <Text style={styles.subTitle}>время вывоза</Text>
-                <Text style={styles.text400_16}>{item.date_complite}</Text>
+                <Text style={styles.text400_16}>{item.date_complite == null ? "-" : item.date_complite }</Text>
             </View>
         </View>
         <Line />
@@ -63,7 +76,7 @@ const OrderItem = ({ item, styles, openImg }) => {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View>
                 <Text style={styles.subTitle}>обслуживающая машина</Text>
-                <Text style={styles.text400_16}>{item.car}</Text>
+                <Text style={styles.text400_16}>{item.car == null ? "Машина еще не нашлась": item.car}</Text>
             </View>
             <TouchableOpacity activeOpacity={0.9} onPress={() => openImg(item.photo)} style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: 40, height: 40 }}>
                 <EvilIcons name="image" size={24} color="white" />

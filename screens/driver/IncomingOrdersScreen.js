@@ -134,7 +134,7 @@ const IncomingOrders = ({ navigation }) => {
                 </ImageBackground>
             </Modal>
 
-            {acceptOrder == null ? renderList() : <CurrentOrder item={acceptOrder} styles={styles} openImg={openImg} />}
+            {acceptOrder == null ? renderList() : <CurrentOrder item={acceptOrder} styles={styles} openImg={openImg} setAcceptOrder={setAcceptOrder} delOrder={delOrder} onRefresh={onRefresh} />}
 
             {/* <View style={{ backgroundColor: '#549D41', padding: '2%', borderRadius: 20, width: '25%', alignSelf: 'center', marginTop: '6%' }}>
                     <Text style={[styles.text400_16, { color: 'white', textAlign: 'center' }]}>2 января</Text>

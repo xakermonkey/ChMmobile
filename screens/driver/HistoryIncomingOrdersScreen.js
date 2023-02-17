@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useRef } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { Appearance, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView, Dimensions, FlatList } from 'react-native'
@@ -60,6 +60,15 @@ const HistoryIncomingOrders = ({ navigation }) => {
         </View>)
     }
 
+    const onViewableItemsChanged = ({
+        viewableItems,
+    }) => {
+        setCurrentDate(viewableItems[0].item.date_create.split(" ")[0]);
+    };
+    const viewabilityConfigCallbackPairs = useRef([
+        { onViewableItemsChanged },
+    ]);
+
     return (
         <View style={[colorScheme.themeContainerStyle, { flex: 1 }]}>
             <StatusBar style={colorScheme.colorScheme === 'dark' ? 'light' : 'dark'} />
@@ -89,6 +98,7 @@ const HistoryIncomingOrders = ({ navigation }) => {
                 ListEmptyComponent={<EmptyComponent />}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
+                viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
             // contentContainerStyle={{ paddingTop: "4%", height: "100%" }}
             // ListFooterComponent={<Line/>}
             />
